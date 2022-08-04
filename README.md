@@ -1,16 +1,19 @@
 # arch-hackset
 My Personal Script To Setup Hacking And Other Important Tools In Arch Based Distro.
 
+During First Run Of Script, System Will Reboot To Install `Snap` Properly. So, Once System Boots Up Again Run The `hackset` Script This Time It Should Work Flawless.
+
+
+> **Note:** Commented Code Requires Special Attention. I'll Try To Fix Them Soon.
+
 # Usage
 ```bash
+wget https://raw.githubusercontent.com/FlareXes/arch-hackset/main/hackset
+
 chmod +x hackset
 
-sudo ./hackset
+./hackset
 ```
-
-> **Warning**: This script can change your system workflow And Can Take Hours To Finish.
-
-**Note:** I'll Update This Soon With Official Blackarch Repo
 
 
 # License
