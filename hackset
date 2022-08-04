@@ -1,25 +1,16 @@
 #!/bin/sh
 
-# Functions
+# Version: 2.0
+
 function isexists {
     local FLAG=1
-    
     if ! command -v $1 &> /dev/null
     then
         FLAG=0
     fi
-
     echo $FLAG
 }
 
-function snapd {
-    git clone https://aur.archlinux.org/snapd.git /tmp/snapd
-    cd /tmp/snapd && makepkg -si
-    
-    sudo systemctl enable --now snapd.socket
-    sudo systemctl start snapd.service
-    sudo ln -s /var/lib/snapd/snap /snap
-}
 
 function greenecho {
     local GREEN='\033[1;32m'
@@ -27,9 +18,21 @@ function greenecho {
     echo -e "\n\n${GREEN}$*${NOCOLOR}"
 }
 
+function snapd {
+    git clone https://aur.archlinux.org/snapd.git /tmp/snapd
+    cd /tmp/snapd && makepkg -si
+    sudo systemctl enable --now snapd.socket
+    sudo systemctl start snapd.service
+    sudo ln -s /var/lib/snapd/snap /snap
+}
+
+
+
 ########################################################################################
 ########################################################################################
 ########################################################################################
+
+
 
 # Clean Odd File ANd Directories
 sudo rm -rfv /tmp/yay /tmp/snapd
@@ -37,28 +40,16 @@ sudo rm -rfv /opt/tools/*
 sudo rm -rfv /usr/local/bin/gobuster /usr/local/bin/ffuf /usr/local/bin/ytfzf /usr/local/bin/fshare
 
 # Initial Setup
-greenecho Initial Setup
-
+greenecho Initial Setup In Progress
 sudo pacman-key --init
 sudo pacman -Syyu --noconfirm
-sudo pacman -S base-devel git go wget curl --noconfirm
-
-# Yay
-greenecho Yay Installation
-
-if [ $( isexists yay ) == 0 ]
-then
-    git clone https://aur.archlinux.org/yay.git /tmp/yay
-    cd /tmp/yay && makepkg -si && yay --noconfirm
-fi
+sudo pacman -S base-devel git go wget curl jq fzf --noconfirm
 
 # Snap
 greenecho Snap Installation
-
 if [ $( isexists snap ) == 0 ]
 then
     read -p "Snap is required system reboot. Reboot after installation (y/n): " CHOICE
-    
     if [ $CHOICE == "y" ] || [ $CHOICE == "Y" ]
     then
         snapd
@@ -68,167 +59,190 @@ then
     fi
 fi
 
+# Yay
+greenecho Yay Installation
+if [ $( isexists yay ) == 0 ]
+then
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    cd /tmp/yay && makepkg -si && yay --noconfirm
+fi
+
+# BlackArch Repository
+greenecho BlackArch Repository Setup 
+curl https://blackarch.org/strap.sh -o /tmp/strap.sh
+sudo chmod +x /tmp/strap.sh
+sudo /bin/sh /tmp/strap.sh
+sudo pacman -Syyu --noconfirm
+
+
+
+########################################################################################
+########################################################################################
+########################################################################################
+
+
+
 # Gobuster
 greenecho Gobuster Installation
-
-sudo git clone https://github.com/OJ/gobuster.git /opt/tools/fuzzers/gobuster
-cd /opt/tools/fuzzers/gobuster && go get && sudo go build -buildvcs=false
-sudo mv gobuster /usr/local/bin
-make clean
+sudo pacman -S gobuster --noconfirm
 
 # Ffuf
 greenecho Ffuf Installation
-
-sudo git clone https://github.com/ffuf/ffuf.git /opt/tools/fuzzers/ffuf
-cd /opt/tools/fuzzers/ffuf && go get && sudo go build -buildvcs=false
-sudo mv ffuf /usr/local/bin
-
-# MPV
-greenecho Mpv Installation
-
-sudo pacman -S mpv --noconfirm
-
-# Devour
-greenecho Devour Installation
-
-yay -S devour --noconfirm
-
-echo 'alias mpv="devour mpv"' >> ~/.zshrc
-echo 'alias mpv="devour mpv"' >> ~/.bashrc
-
-# Ytfzf
-greenecho Ytfzf Installation
-
-sudo pacman -S jq fzf --noconfirm
-yay -S pup --noconfirm
-
-sudo wget https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf -O /usr/local/bin/ytfzf
-sudo chmod +x /usr/local/bin/ytfzf
-
-# GDB :- GNU Debugger
-greenecho GDB Installation
-
-sudo pacman -S gdb --noconfirm
+sudo pacman -S ffuf --noconfirm
 
 # Ltrace
 greenecho Ltrace Installation
-
 sudo pacman -S ltrace --noconfirm
 
 # Ghidra
 greenecho Ghidra Installation
-
-read -p "Ghidra Takes Long Time To Install. Do You Want Skip (y/n): " CHOICE
-
-if [[ $CHOICE == "y" ]] || [[ $CHOICE == "Y" ]];
-then
-    yay -S ghidra-darcula --noconfirm
-fi
+sudo pacman -S ghidra --noconfirm
 
 # John The Ripper
 greenecho John The Ripper Installation
-
 sudo pacman -S john --noconfirm
 
 # Hashcat
 greenecho Hashcat Installation
-
 sudo pacman -S hashcat --noconfirm
-
-# Docker
-greenecho Docker Installation
-
-sudo pacman -S docker --noconfirm
-
-sudo systemctl start docker.service
-sudo systemctl enable docker.service
-sudo systemctl restart docker
-sudo usermod -aG docker $USER
-
-echo -e "\nTesting Docker Installation Via 'hello-world' Image"
-
-sudo docker run hello-world
 
 # Binwalk
 greenecho Binwalk Installation
-
 sudo pacman -S binwalk --noconfirm
 
 # Wireshark
 greenecho Wireshark Installation
-
-yay -S wireshark-qt --noconfirm
+sudo pacman -S wireshark-qt --noconfirm
 sudo chmod +x /usr/sbin/dumpcap
 chmod +x /usr/bin/dumpcap
 
-# Fshare
-greenecho Fshare Installation
+# Exiftool
+greenecho ExifTool Installation
+sudo pacman -S perl-image-exiftool --noconfirm
 
-echo "Creating Fshare Utility"
-# echo "#\!/bin/sh" > fshare
-# echo 'curl -sS -F "file=@$(find $HOME | fzf)" https://0x0.st | xclip -selection clipboard && xclip -selection clipboard -o' >> fshare
 
-echo "#!/bin/sh" > fshare
 
-echo 'curl -sS -F "file=@$(find $HOME | fzf)" https://0x0.st | xclip -selection clipboard && xclip -selection clipboard -o' | tee -a fshare > /dev/null
+########################################################################################
+########################################################################################
+########################################################################################
 
-echo "Location: /usr/local/bin/fshare"
 
-sudo chmod +x fshare
-sudo mv fshare /usr/local/bin/
-
-# Visual Stdio Code
-greenecho Visual Stdio Code Installation
-
-sudo snap install code --classic
-
-# Brave
-greenecho Brave Installation
-
-yay -S brave-bin --noconfirm
-
-# Librewolf
-greenecho Librewolf Installation
-
-yay -S librewolf-bin --noconfirm
-
-# Authy
-greenecho Authy Installation
-
-sudo snap install authy
-
-# Timeshift
-greenecho Timeshift Installation
-
-yay -S timeshift --noconfirm
-
-# Lsd
-greenecho Lsd Installation
-
-sudo pacman -S lsd
-
-echo "# ls" >> ~/.zshrc
-echo "alias l='lsd -l'" >> ~/.zshrc
-echo "alias ll='lsd -la'" >> ~/.zshrc
-echo "alias la='lsd -A'" >> ~/.zshrc
 
 # Ufw 
 greenecho UFW Installation
-
-sudo pacman -S ufw
+sudo pacman -S ufw --noconfirm
 sudo systemctl start ufw
 sudo systemctl enable ufw
 sudo ufw default allow outgoing
 sudo ufw default deny incoming
 sudo ufw enable
 
+# Authy
+greenecho Authy Installation
+sudo snap install authy
+
+
+
+########################################################################################
+########################################################################################
+########################################################################################
+
+
+
+# Timeshift
+greenecho Timeshift Installation
+yay -S timeshift --noconfirm
+
+
+# Docker
+greenecho Docker Installation
+sudo pacman -S docker --noconfirm
+sudo systemctl start docker.service
+sudo systemctl enable docker.service
+sudo systemctl restart docker
+sudo usermod -aG docker $USER
+echo -e "\nTesting Docker Installation Via 'hello-world' Image"
+sudo docker run hello-world
+
+
+
+########################################################################################
+########################################################################################
+########################################################################################
+
+
+
 # Neovim
 greenecho Neovim Installation
+sudo pacman -S neovim --noconfirm
 
-sudo pacman -S neovim
+# Lsd
+# greenecho Lsd Installation
+# sudo pacman -S lsd
+# echo "# ls" >> ~/.zshrc
+# echo "alias l='lsd -l'" >> ~/.zshrc
+# echo "alias ll='lsd -la'" >> ~/.zshrc
+# echo "alias la='lsd -A'" >> ~/.zshrc
 
-# Blackarch Setup
-curl -O https :// blackarch .org/strap.sh
-sha1sum strap.sh # should match: d062038042c5f141755ea39dbd615e6ff9e23121
-sudo chmod +x strap.sh
-sudo ./ strap.sh
+
+
+########################################################################################
+########################################################################################
+########################################################################################
+
+
+
+# Visual Stdio Code
+greenecho Visual Stdio Code Installation
+sudo snap install code --classic
+
+# GDB :- GNU Debugger
+greenecho GDB Installation
+sudo pacman -S gdb --noconfirm
+
+
+
+########################################################################################
+########################################################################################
+########################################################################################
+
+
+
+# Brave
+greenecho Brave Installation
+yay -S brave-bin --noconfirm
+
+# Librewolf
+greenecho Librewolf Installation
+yay -S librewolf-bin --noconfirm
+
+# MPV
+greenecho Mpv Installation
+sudo pacman -S mpv --noconfirm
+
+# Devour
+greenecho Devour Installation
+yay -S devour --noconfirm
+echo 'alias mpv="devour mpv"' >> ~/.zshrc
+echo 'alias mpv="devour mpv"' >> ~/.bashrc
+
+# Fshare
+# greenecho Creating Fshare Utility
+# echo "#\!/bin/sh" > fshare
+# echo 'curl -sS -F "file=@$(find $HOME | fzf)" https://0x0.st | xclip -selection clipboard && xclip -selection clipboard -o' >> fshare
+# echo "#!/bin/sh" > fshare
+# echo 'curl -sS -F "file=@$(find $HOME | fzf)" https://0x0.st | xclip -selection clipboard && xclip -selection clipboard -o' | tee -a fshare > /dev/null
+# echo "Location: /usr/local/bin/fshare"
+# sudo chmod +x fshare
+# sudo mv fshare /usr/local/bin/
+
+
+# Ytfzf
+greenecho Ytfzf Installation
+yay -S pup --noconfirm
+sudo wget https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf -O /usr/local/bin/ytfzf
+sudo chmod +x /usr/local/bin/ytfzf
+
+# YouTube-dl
+greenecho YouTube-dl And yt-dlp Installation
+sudo pacman -S youtube-dl yt-dlp --noconfirm
