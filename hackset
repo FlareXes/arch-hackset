@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Version: 2.0
+# Version: 2.1
 
 function isexists {
     local FLAG=1
@@ -26,6 +26,12 @@ function snapd {
     sudo ln -s /var/lib/snapd/snap /snap
 }
 
+function restart_alert {
+    echo -e "\n\nSystem About To Restart In 10 Seconds. Save Your Work Now!"
+    sleep 10
+    reboot
+}
+
 
 
 ########################################################################################
@@ -36,7 +42,6 @@ function snapd {
 
 # Clean Odd File ANd Directories
 sudo rm -rfv /tmp/yay /tmp/snapd
-sudo rm -rfv /opt/tools/*
 sudo rm -rfv /usr/local/bin/gobuster /usr/local/bin/ffuf /usr/local/bin/ytfzf /usr/local/bin/fshare
 
 # Initial Setup
@@ -53,9 +58,7 @@ then
     if [ $CHOICE == "y" ] || [ $CHOICE == "Y" ]
     then
         snapd
-        echo -e "\n\nSystem About To Restart In 10 Seconds. Save Your Work Now!"
-        sleep 10
-        reboot
+        restart_alert
     fi
 fi
 
@@ -68,7 +71,7 @@ then
 fi
 
 # BlackArch Repository
-greenecho BlackArch Repository Setup 
+greenecho BlackArch Repository Setup
 curl https://blackarch.org/strap.sh -o /tmp/strap.sh
 sudo chmod +x /tmp/strap.sh
 sudo /bin/sh /tmp/strap.sh
@@ -84,42 +87,68 @@ sudo pacman -Syyu --noconfirm
 
 # Gobuster
 greenecho Gobuster Installation
-sudo pacman -S gobuster --noconfirm
+if [ $( isexists gobuster ) == 0 ]
+then
+    sudo pacman -S gobuster --noconfirm
+fi
 
 # Ffuf
 greenecho Ffuf Installation
-sudo pacman -S ffuf --noconfirm
+if [ $( isexists ffuf ) == 0 ]
+then
+    sudo pacman -S ffuf --noconfirm
+fi
 
 # Ltrace
 greenecho Ltrace Installation
-sudo pacman -S ltrace --noconfirm
+if [ $( isexists ltrace ) == 0 ]
+then
+    sudo pacman -S ltrace --noconfirm
+fi
 
 # Ghidra
 greenecho Ghidra Installation
-sudo pacman -S ghidra --noconfirm
+if [ $( isexists ghidra ) == 0 ]
+then
+    sudo pacman -S ghidra --noconfirm
+fi
 
 # John The Ripper
 greenecho John The Ripper Installation
-sudo pacman -S john --noconfirm
+if [ $( isexists john ) == 0 ]
+then
+    sudo pacman -S john --noconfirm
+fi
 
 # Hashcat
 greenecho Hashcat Installation
-sudo pacman -S hashcat --noconfirm
+if [ $( isexists hashcat ) == 0 ]
+then
+    sudo pacman -S hashcat --noconfirm
+fi
 
 # Binwalk
 greenecho Binwalk Installation
-sudo pacman -S binwalk --noconfirm
+if [ $( isexists binwalk ) == 0 ]
+then
+    sudo pacman -S binwalk --noconfirm
+fi
 
 # Wireshark
 greenecho Wireshark Installation
-sudo pacman -S wireshark-qt --noconfirm
-sudo chmod +x /usr/sbin/dumpcap
-chmod +x /usr/bin/dumpcap
+if [ $( isexists wireshark ) == 0 ]
+then
+    sudo pacman -S wireshark-qt --noconfirm
+    sudo chmod +x /usr/sbin/dumpcap
+    chmod +x /usr/bin/dumpcap
+fi
 
 # Exiftool
 greenecho ExifTool Installation
-sudo pacman -S perl-image-exiftool --noconfirm
-
+if [ $( isexists exiftool ) == 0 ]
+then
+    sudo pacman -S perl-image-exiftool --noconfirm
+fi
 
 
 ########################################################################################
@@ -130,7 +159,10 @@ sudo pacman -S perl-image-exiftool --noconfirm
 
 # Ufw 
 greenecho UFW Installation
-sudo pacman -S ufw --noconfirm
+if [ $( isexists ufw ) == 0 ]
+then
+    sudo pacman -S ufw --noconfirm
+fi
 sudo systemctl start ufw
 sudo systemctl enable ufw
 sudo ufw default allow outgoing
@@ -139,8 +171,10 @@ sudo ufw enable
 
 # Authy
 greenecho Authy Installation
-sudo snap install authy
-
+if [ $( isexists authy ) == 0 ]
+then
+    sudo snap install authy
+fi
 
 
 ########################################################################################
@@ -151,12 +185,17 @@ sudo snap install authy
 
 # Timeshift
 greenecho Timeshift Installation
+if [ $( isexists timeshift ) == 0 ]
+then
 yay -S timeshift --noconfirm
-
+fi
 
 # Docker
 greenecho Docker Installation
-sudo pacman -S docker --noconfirm
+if [ $( isexists docker ) == 0 ]
+then
+    sudo pacman -S docker --noconfirm
+fi
 sudo systemctl start docker.service
 sudo systemctl enable docker.service
 sudo systemctl restart docker
@@ -174,7 +213,10 @@ sudo docker run hello-world
 
 # Neovim
 greenecho Neovim Installation
-sudo pacman -S neovim --noconfirm
+if [ $( isexists neovim ) == 0 ]
+then
+    sudo pacman -S neovim --noconfirm
+fi
 
 # Lsd
 # greenecho Lsd Installation
@@ -194,12 +236,17 @@ sudo pacman -S neovim --noconfirm
 
 # Visual Stdio Code
 greenecho Visual Stdio Code Installation
-sudo snap install code --classic
+if [ $( isexists code ) == 0 ]
+then
+    sudo snap install code --classic
+fi
 
 # GDB :- GNU Debugger
 greenecho GDB Installation
-sudo pacman -S gdb --noconfirm
-
+if [ $( isexists gdb ) == 0 ]
+then
+    sudo pacman -S gdb --noconfirm
+fi
 
 
 ########################################################################################
@@ -210,21 +257,33 @@ sudo pacman -S gdb --noconfirm
 
 # Brave
 greenecho Brave Installation
-yay -S brave-bin --noconfirm
+if [ $( isexists brave ) == 0 ]
+then
+    yay -S brave-bin --noconfirm
+fi
 
 # Librewolf
 greenecho Librewolf Installation
-yay -S librewolf-bin --noconfirm
+if [ $( isexists librewolf ) == 0 ]
+then
+    yay -S librewolf-bin --noconfirm
+fi
 
 # MPV
 greenecho Mpv Installation
-sudo pacman -S mpv --noconfirm
+if [ $( isexists mpv ) == 0 ]
+then
+    sudo pacman -S mpv --noconfirm
+fi
 
 # Devour
 greenecho Devour Installation
-yay -S devour --noconfirm
-echo 'alias mpv="devour mpv"' >> ~/.zshrc
-echo 'alias mpv="devour mpv"' >> ~/.bashrc
+if [ $( isexists devour ) == 0 ]
+then
+    yay -S devour --noconfirm
+    echo 'alias mpv="devour mpv"' >> ~/.zshrc
+    echo 'alias mpv="devour mpv"' >> ~/.bashrc
+fi
 
 # Fshare
 # greenecho Creating Fshare Utility
@@ -239,10 +298,16 @@ echo 'alias mpv="devour mpv"' >> ~/.bashrc
 
 # Ytfzf
 greenecho Ytfzf Installation
-yay -S pup --noconfirm
-sudo wget https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf -O /usr/local/bin/ytfzf
-sudo chmod +x /usr/local/bin/ytfzf
+if [ $( isexists pup ) == 0 ]
+then
+    yay -S pup --noconfirm
+    sudo wget https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf -O /usr/local/bin/ytfzf
+    sudo chmod +x /usr/local/bin/ytfzf
+fi
 
 # YouTube-dl
 greenecho YouTube-dl And yt-dlp Installation
-sudo pacman -S youtube-dl yt-dlp --noconfirm
+if [ $( isexists yt-dlp ) == 0 ]
+then
+    sudo pacman -S youtube-dl yt-dlp --noconfirm
+fi
