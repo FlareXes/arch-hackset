@@ -286,15 +286,9 @@ then
 fi
 
 # Fshare
-# greenecho Creating Fshare Utility
-# echo "#\!/bin/sh" > fshare
-# echo 'curl -sS -F "file=@$(find $HOME | fzf)" https://0x0.st | xclip -selection clipboard && xclip -selection clipboard -o' >> fshare
-# echo "#!/bin/sh" > fshare
-# echo 'curl -sS -F "file=@$(find $HOME | fzf)" https://0x0.st | xclip -selection clipboard && xclip -selection clipboard -o' | tee -a fshare > /dev/null
-# echo "Location: /usr/local/bin/fshare"
-# sudo chmod +x fshare
-# sudo mv fshare /usr/local/bin/
-
+greenecho Creating Fshare Utility
+wget https://raw.githubusercontent.com/FlareXes/Mirco-Utils/main/fshare -O /usr/local/bin/fshare
+sudo chmod +x /usr/local/bin/fshare
 
 # Ytfzf
 greenecho Ytfzf Installation
