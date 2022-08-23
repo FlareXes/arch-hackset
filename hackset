@@ -41,14 +41,14 @@ function restart_alert {
 
 
 # Clean Odd File ANd Directories
-sudo rm -rfv /tmp/yay /tmp/snapd
+sudo rm -rfv /tmp/yay /tmp/snapd /tmp/aws /tmp/awscliv2.zip
 sudo rm -rfv /usr/local/bin/gobuster /usr/local/bin/ffuf /usr/local/bin/ytfzf /usr/local/bin/fshare
 
 # Initial Setup
 greenecho Initial Setup In Progress
 sudo pacman-key --init
 sudo pacman -Syyu --noconfirm
-sudo pacman -S base-devel git go wget curl jq fzf --noconfirm
+sudo pacman -S base-devel git go wget curl xclip jq fzf --noconfirm
 
 # Snap
 greenecho Snap Installation
@@ -177,6 +177,7 @@ then
 fi
 
 
+
 ########################################################################################
 ########################################################################################
 ########################################################################################
@@ -187,7 +188,7 @@ fi
 greenecho Timeshift Installation
 if [ $( isexists timeshift ) == 0 ]
 then
-yay -S timeshift --noconfirm
+    yay -S timeshift --noconfirm
 fi
 
 # Docker
@@ -202,6 +203,15 @@ sudo systemctl restart docker
 sudo usermod -aG docker $USER
 echo -e "\nTesting Docker Installation Via 'hello-world' Image"
 sudo docker run hello-world
+
+# Aws Cli
+greenecho AWS-CLI Installation
+if [ $( isexists aws ) == 0 ]
+then
+    curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip
+    unzip /tmp/awscliv2.zip -d /tmp/
+    sudo /tmp/aws/install
+fi
 
 
 
@@ -220,11 +230,19 @@ fi
 
 # Lsd
 # greenecho Lsd Installation
-# sudo pacman -S lsd
-# echo "# ls" >> ~/.zshrc
-# echo "alias l='lsd -l'" >> ~/.zshrc
-# echo "alias ll='lsd -la'" >> ~/.zshrc
-# echo "alias la='lsd -A'" >> ~/.zshrc
+sudo pacman -S lsd
+echo -e "\n# ls" >> ~/.zshrc
+if alias l 2>/dev/null; then
+  echo "alias l='lsd -l'" >> ~/.zshrc
+fi
+
+if alias ll 2>/dev/null; then
+  echo "alias ll='lsd -la'" >> ~/.zshrc
+fi
+
+if alias la 2>/dev/null; then
+  echo "alias la='lsd -A'" >> ~/.zshrc
+fi
 
 
 
@@ -287,7 +305,7 @@ fi
 
 # Fshare
 greenecho Creating Fshare Utility
-wget https://raw.githubusercontent.com/FlareXes/Mirco-Utils/main/fshare -O /usr/local/bin/fshare
+sudo wget https://raw.githubusercontent.com/FlareXes/Mirco-Utils/main/fshare -O /usr/local/bin/fshare
 sudo chmod +x /usr/local/bin/fshare
 
 # Ytfzf
@@ -299,9 +317,11 @@ then
     sudo chmod +x /usr/local/bin/ytfzf
 fi
 
-# YouTube-dl
+# YouTube-dl And Yt-Dlp
 greenecho YouTube-dl And yt-dlp Installation
 if [ $( isexists yt-dlp ) == 0 ]
 then
     sudo pacman -S youtube-dl yt-dlp --noconfirm
 fi
+
+echo -e $'\e[32;1m\nInstalltion Complete\e\n'
