@@ -24,6 +24,7 @@ function snapd {
     sudo systemctl enable --now snapd.socket
     sudo systemctl start snapd.service
     sudo ln -s /var/lib/snapd/snap /snap
+    sudo systemctl enable --now snapd.apparmor
 }
 
 function restart_alert {
@@ -230,7 +231,11 @@ fi
 
 # Lsd
 # greenecho Lsd Installation
-sudo pacman -S lsd
+if [ $( isexists lsd ) == 0 ]
+then
+    sudo pacman -S lsd
+fi
+
 echo -e "\n# ls" >> ~/.zshrc
 if alias l 2>/dev/null; then
   echo "alias l='lsd -l'" >> ~/.zshrc
