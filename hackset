@@ -18,13 +18,10 @@ function greenecho {
     echo -e "\n\n${GREEN}$*${NOCOLOR}"
 }
 
-function snapd {
-    git clone https://aur.archlinux.org/snapd.git /tmp/snapd
-    cd /tmp/snapd && makepkg -si
+function snapd_setup {
     sudo systemctl enable --now snapd.socket
     sudo systemctl start snapd.service
     sudo ln -s /var/lib/snapd/snap /snap
-    sudo systemctl enable --now snapd.apparmor
 }
 
 function restart_alert {
@@ -34,11 +31,9 @@ function restart_alert {
 }
 
 
-
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 
 
 # Clean Odd File ANd Directories
@@ -49,17 +44,21 @@ sudo rm -rfv /usr/local/bin/gobuster /usr/local/bin/ffuf /usr/local/bin/ytfzf /u
 greenecho Initial Setup In Progress
 sudo pacman-key --init
 sudo pacman -Syyu --noconfirm
-sudo pacman -S base-devel git go wget curl xclip jq fzf --noconfirm
+sudo pacman -S base-devel git go wget curl net-tools xclip jq fzf --noconfirm
 
 # Snap
 greenecho Snap Installation
-if [ $( isexists snap ) == 0 ]
+if [ $( isexists snap ) == 0 ];
 then
     read -p "Snap is required system reboot. Reboot after installation (y/n): " CHOICE
-    if [ $CHOICE == "y" ] || [ $CHOICE == "Y" ]
+    if [ $CHOICE == "y" ] || [ $CHOICE == "Y" ];
     then
-        snapd
+        git clone https://aur.archlinux.org/snapd.git /tmp/snapd
+        cd /tmp/snapd && makepkg -si
+        snapd_setup
         restart_alert
+    else
+        snapd_setup
     fi
 fi
 
@@ -79,11 +78,9 @@ sudo /bin/sh /tmp/strap.sh
 sudo pacman -Syyu --noconfirm
 
 
-
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 
 
 # Gobuster
@@ -157,7 +154,6 @@ fi
 ########################################################################################
 
 
-
 # Ufw 
 greenecho UFW Installation
 if [ $( isexists ufw ) == 0 ]
@@ -178,11 +174,9 @@ then
 fi
 
 
-
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 
 
 # Timeshift
@@ -215,11 +209,9 @@ then
 fi
 
 
-
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 
 
 # Neovim
@@ -231,11 +223,7 @@ fi
 
 # Lsd
 # greenecho Lsd Installation
-if [ $( isexists lsd ) == 0 ]
-then
-    sudo pacman -S lsd
-fi
-
+sudo pacman -S lsd
 echo -e "\n# ls" >> ~/.zshrc
 if alias l 2>/dev/null; then
   echo "alias l='lsd -l'" >> ~/.zshrc
@@ -250,11 +238,9 @@ if alias la 2>/dev/null; then
 fi
 
 
-
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 
 
 # Visual Stdio Code
@@ -275,7 +261,6 @@ fi
 ########################################################################################
 ########################################################################################
 ########################################################################################
-
 
 
 # Brave
@@ -330,3 +315,5 @@ then
 fi
 
 echo -e $'\e[32;1m\nInstalltion Complete\e\n'
+
+exit 0
