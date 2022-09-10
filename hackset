@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Version: 2.1
+# Version: 2.2
 
 function isexists {
     local FLAG=1
@@ -44,7 +44,7 @@ sudo rm -rfv /usr/local/bin/gobuster /usr/local/bin/ffuf /usr/local/bin/ytfzf /u
 greenecho Initial Setup In Progress
 sudo pacman-key --init
 sudo pacman -Syyu --noconfirm
-sudo pacman -S base-devel git go wget curl net-tools xclip jq fzf --noconfirm
+sudo pacman -S base-devel git go wget curl net-tools xclip --noconfirm
 
 # Snap
 greenecho Snap Installation
@@ -82,55 +82,13 @@ sudo pacman -Syyu --noconfirm
 ########################################################################################
 ########################################################################################
 
+# Basics
+greenecho Basic Utilities Installation
+sudo pacman -S --noconfirm ffuf ltrace ghidra gobuster john hashcat binwalk perl-image-exiftool \
+                neovim lsd gdb mpv youtube-dl yt-dlp jq fzf
 
-# Gobuster
-greenecho Gobuster Installation
-if [ $( isexists gobuster ) == 0 ]
-then
-    sudo pacman -S gobuster --noconfirm
-fi
-
-# Ffuf
-greenecho Ffuf Installation
-if [ $( isexists ffuf ) == 0 ]
-then
-    sudo pacman -S ffuf --noconfirm
-fi
-
-# Ltrace
-greenecho Ltrace Installation
-if [ $( isexists ltrace ) == 0 ]
-then
-    sudo pacman -S ltrace --noconfirm
-fi
-
-# Ghidra
-greenecho Ghidra Installation
-if [ $( isexists ghidra ) == 0 ]
-then
-    sudo pacman -S ghidra --noconfirm
-fi
-
-# John The Ripper
-greenecho John The Ripper Installation
-if [ $( isexists john ) == 0 ]
-then
-    sudo pacman -S john --noconfirm
-fi
-
-# Hashcat
-greenecho Hashcat Installation
-if [ $( isexists hashcat ) == 0 ]
-then
-    sudo pacman -S hashcat --noconfirm
-fi
-
-# Binwalk
-greenecho Binwalk Installation
-if [ $( isexists binwalk ) == 0 ]
-then
-    sudo pacman -S binwalk --noconfirm
-fi
+greenecho Yay Installations
+yay -S brave-bin librewolf-bin pup timeshift --noconfirm
 
 # Wireshark
 greenecho Wireshark Installation
@@ -140,19 +98,6 @@ then
     sudo chmod +x /usr/sbin/dumpcap
     chmod +x /usr/bin/dumpcap
 fi
-
-# Exiftool
-greenecho ExifTool Installation
-if [ $( isexists exiftool ) == 0 ]
-then
-    sudo pacman -S perl-image-exiftool --noconfirm
-fi
-
-
-########################################################################################
-########################################################################################
-########################################################################################
-
 
 # Ufw 
 greenecho UFW Installation
@@ -165,26 +110,6 @@ sudo systemctl enable ufw
 sudo ufw default allow outgoing
 sudo ufw default deny incoming
 sudo ufw enable
-
-# Authy
-greenecho Authy Installation
-if [ $( isexists authy ) == 0 ]
-then
-    sudo snap install authy
-fi
-
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-
-# Timeshift
-greenecho Timeshift Installation
-if [ $( isexists timeshift ) == 0 ]
-then
-    yay -S timeshift --noconfirm
-fi
 
 # Docker
 greenecho Docker Installation
@@ -208,80 +133,18 @@ then
     sudo /tmp/aws/install
 fi
 
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-
-# Neovim
-greenecho Neovim Installation
-if [ $( isexists neovim ) == 0 ]
+# Authy
+greenecho Authy Installation
+if [ $( isexists authy ) == 0 ]
 then
-    sudo pacman -S neovim --noconfirm
+    sudo snap install authy
 fi
-
-# Lsd
-# greenecho Lsd Installation
-sudo pacman -S lsd
-echo -e "\n# ls" >> ~/.zshrc
-if alias l 2>/dev/null; then
-  echo "alias l='lsd -l'" >> ~/.zshrc
-fi
-
-if alias ll 2>/dev/null; then
-  echo "alias ll='lsd -la'" >> ~/.zshrc
-fi
-
-if alias la 2>/dev/null; then
-  echo "alias la='lsd -A'" >> ~/.zshrc
-fi
-
-
-########################################################################################
-########################################################################################
-########################################################################################
-
 
 # Visual Stdio Code
 greenecho Visual Stdio Code Installation
 if [ $( isexists code ) == 0 ]
 then
     sudo snap install code --classic
-fi
-
-# GDB :- GNU Debugger
-greenecho GDB Installation
-if [ $( isexists gdb ) == 0 ]
-then
-    sudo pacman -S gdb --noconfirm
-fi
-
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-
-# Brave
-greenecho Brave Installation
-if [ $( isexists brave ) == 0 ]
-then
-    yay -S brave-bin --noconfirm
-fi
-
-# Librewolf
-greenecho Librewolf Installation
-if [ $( isexists librewolf ) == 0 ]
-then
-    yay -S librewolf-bin --noconfirm
-fi
-
-# MPV
-greenecho Mpv Installation
-if [ $( isexists mpv ) == 0 ]
-then
-    sudo pacman -S mpv --noconfirm
 fi
 
 # Devour
@@ -300,19 +163,8 @@ sudo chmod +x /usr/local/bin/fshare
 
 # Ytfzf
 greenecho Ytfzf Installation
-if [ $( isexists pup ) == 0 ]
-then
-    yay -S pup --noconfirm
-    sudo wget https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf -O /usr/local/bin/ytfzf
-    sudo chmod +x /usr/local/bin/ytfzf
-fi
-
-# YouTube-dl And Yt-Dlp
-greenecho YouTube-dl And yt-dlp Installation
-if [ $( isexists yt-dlp ) == 0 ]
-then
-    sudo pacman -S youtube-dl yt-dlp --noconfirm
-fi
+sudo wget https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf -O /usr/local/bin/ytfzf
+sudo chmod +x /usr/local/bin/ytfzf
 
 echo -e $'\e[32;1m\nInstalltion Complete\e\n'
 
