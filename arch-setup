@@ -9,7 +9,7 @@ then
     sudo pacman --noconfirm -S archlinux-keyring
     sudo pacman-key --init
     sudo pacman --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv \
-    youtube-dl yt-dlp obs-studio jq fzf unzip podman ufw firefox \
+    youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
     firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk
     
     # Part: 2
@@ -22,6 +22,12 @@ then
     sudo wget https://raw.githubusercontent.com/FlareXes/Mirco-Utils/main/fshare -O /usr/local/bin/fshare
     sudo chmod +x /usr/local/bin/fshare
     
+    sudo wget https://raw.githubusercontent.com/FlareXes/Mirco-Utils/main/emofzf -O /usr/local/bin/emofzf
+    sudo chmod +x /usr/local/bin/emofzf
+
+    sudo wget https://raw.githubusercontent.com/FlareXes/Mirco-Utils/main/myman -O /usr/local/bin/myman
+    sudo chmod +x /usr/local/bin/myman
+
     sudo wget https://raw.githubusercontent.com/FlareXes/Mirco-Utils/main/ytplay -O /usr/local/bin/ytplay
     sudo chmod +x /usr/local/bin/ytplay
     sudo sed -i "s/mpv/devour mpv/" /usr/local/bin/ytplay
@@ -40,14 +46,19 @@ then
     # Wireshark
     sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
     
-    # Podman
-    podman run hello-world
+    # Docker
+    sudo systemctl start docker.service
+    sudo systemctl enable docker.service
+    sudo systemctl restart docker
+    sudo usermod -aG docker $USER
+    docker run hello-world
     
     # Snap
     sudo systemctl enable --now snapd.socket
     sudo systemctl start snapd.service
     sudo ln -s /var/lib/snapd/snap /snap
-    
+    sudo systemctl enable --now snapd.apparmor
+
     # Ufw
     sudo systemctl enable ufw
     sudo systemctl start ufw
@@ -67,10 +78,12 @@ else
     
     yay -S brave-bin librewolf-bin onlyoffice-bin timeshift devour pup --noconfirm
     
+    sudo snap install pycharm-professional --classic
+    sudo snap install clion --classic 
     sudo snap install code --classic
+    sudo snap install spotify 
     sudo snap install authy
-    sudo systemctl enable --now snapd.apparmor
-    
+
     echo 'alias mpv="devour mpv"' >> ~/.zshrc
     echo 'alias mpv="devour mpv"' >> ~/.bashrc
     
