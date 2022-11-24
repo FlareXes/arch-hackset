@@ -24,16 +24,16 @@ then
     mkdir ~/.config/terminator/ && touch ~/.config/terminator/config
     wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/terminator/config -O ~/.config/terminator/config
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/fshare -O /usr/local/bin/fshare
+    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/fshare -O /usr/local/bin/fshare
     sudo chmod +x /usr/local/bin/fshare
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/emofzf -O /usr/local/bin/emofzf
+    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/emofzf -O /usr/local/bin/emofzf
     sudo chmod +x /usr/local/bin/emofzf
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/myman -O /usr/local/bin/myman
+    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/myman -O /usr/local/bin/myman
     sudo chmod +x /usr/local/bin/myman
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/ytplay -O /usr/local/bin/ytplay
+    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/ytplay -O /usr/local/bin/ytplay
     sudo chmod +x /usr/local/bin/ytplay
     sudo sed -i "s/mpv/devour mpv/" /usr/local/bin/ytplay
     
