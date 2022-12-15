@@ -9,7 +9,7 @@ then
     sudo pacman --noconfirm -S archlinux-keyring
     sudo pacman-key --init
     sudo pacman --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv \
-    axel youtube-dl yt-dlp obs-studio terminator jq fzf unzip docker ufw firefox \
+    axel pass-otp youtube-dl yt-dlp obs-studio terminator jq fzf unzip docker ufw firefox \
     firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython
 
     # Part: 2
@@ -33,6 +33,9 @@ then
     sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/myman -O /usr/local/bin/myman
     sudo chmod +x /usr/local/bin/myman
 
+    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/passrofi -O /usr/local/bin/passrofi
+    sudo chmod +x /usr/local/bin/passrofi
+
     sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/ytplay -O /usr/local/bin/ytplay
     sudo chmod +x /usr/local/bin/ytplay
     sudo sed -i "s/mpv/devour mpv/" /usr/local/bin/ytplay
@@ -52,6 +55,9 @@ then
 
     git clone https://github.com/FlareXes/watodo.git /tmp/watodo
     cd /tmp/watodo && chmod +x setup && ./setup
+
+    git clone https://github.com/FlareXes/watodo-sync.git /tmp/watodo-sync
+    cd /tmp/watodo-sync && chmod +x setup && ./setup
 
     git clone https://github.com/FlareXes/yt-like.git /tmp/yt-like
     cd /tmp/yt-like && chmod +x setup.sh && ./setup.sh
@@ -97,16 +103,23 @@ then
 
 else
     # Part: 4
-    sudo pacman -Syyu -noconfirm
+    sudo pacman -Syyu --noconfirm
+
+    # Part: 5
+    sudo pacman --noconfirm -S hashcat johnny cuda nvidia nvidia-settings \
+    feroxbuster nmap whois
     
+    # Part: 6
     yay -S brave-bin librewolf-bin onlyoffice-bin timeshift devour pup --noconfirm
     
+    # Part: 7
     sudo snap install pycharm-professional --classic
     sudo snap install clion --classic 
     sudo snap install code --classic
     sudo snap install spotify 
     sudo snap install authy
 
+    # Part: 8
     rm -rf ~/.config/arch-hackset/
 fi
 
