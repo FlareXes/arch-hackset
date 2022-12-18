@@ -9,7 +9,7 @@ then
     sudo pacman --noconfirm -S archlinux-keyring
     sudo pacman-key --init
     sudo pacman --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv \
-    axel pass-otp youtube-dl yt-dlp obs-studio terminator jq fzf unzip docker ufw firefox \
+    axel pass-otp youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
     firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython
 
     # Part: 2
@@ -20,9 +20,6 @@ then
 
     curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip
     unzip /tmp/awscliv2.zip -d /tmp/ && cd /tmp/aws/ && sudo ./install
-
-    mkdir ~/.config/terminator/ && touch ~/.config/terminator/config
-    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/terminator/config -O ~/.config/terminator/config
 
     sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/fshare -O /usr/local/bin/fshare
     sudo chmod +x /usr/local/bin/fshare
