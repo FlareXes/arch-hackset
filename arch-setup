@@ -9,8 +9,9 @@ then
     sudo pacman --noconfirm -S archlinux-keyring
     sudo pacman-key --init
     sudo pacman --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv \
-    axel pass-otp youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
-    firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython
+    seahorse axel pass-otp youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
+    firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython \
+    keepassxc foliate 
 
     # Part: 2
     curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
@@ -21,19 +22,16 @@ then
     curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip
     unzip /tmp/awscliv2.zip -d /tmp/ && cd /tmp/aws/ && sudo ./install
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/fshare -O /usr/local/bin/fshare
+    sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare -O /usr/local/bin/fshare
     sudo chmod +x /usr/local/bin/fshare
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/emofzf -O /usr/local/bin/emofzf
+    sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/emofzf -O /usr/local/bin/emofzf
     sudo chmod +x /usr/local/bin/emofzf
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/myman -O /usr/local/bin/myman
+    sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman -O /usr/local/bin/myman
     sudo chmod +x /usr/local/bin/myman
 
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/passrofi -O /usr/local/bin/passrofi
-    sudo chmod +x /usr/local/bin/passrofi
-
-    sudo wget https://raw.githubusercontent.com/FlareXes/utils/main/bin/ytplay -O /usr/local/bin/ytplay
+    sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/ytplay -O /usr/local/bin/ytplay
     sudo chmod +x /usr/local/bin/ytplay
     sudo sed -i "s/mpv/devour mpv/" /usr/local/bin/ytplay
     
@@ -47,6 +45,9 @@ then
     wget https://github.com/FlareXes/randx/raw/master/bin/randx_unix -O /tmp/randx_unix
     chmod +x /tmp/randx_unix && sudo mv /tmp/randx_unix /usr/local/bin/randx
 
+    wget https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi -O /usr/local/bin/passrofi
+    sudo chmod +x /usr/local/bin/passrofi
+
     git clone https://github.com/FlareXes/cryptfile.git /tmp/cryptfile
     cd  /tmp/cryptfile && chmod +x setup && ./setup
 
@@ -58,6 +59,9 @@ then
 
     git clone https://github.com/FlareXes/yt-like.git /tmp/yt-like
     cd /tmp/yt-like && chmod +x setup.sh && ./setup.sh
+
+    git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
+    cd $HOME/dotfiles && mv ./.scripts $HOME/
 
     git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
     sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
@@ -104,7 +108,7 @@ else
 
     # Part: 5
     sudo pacman --noconfirm -S hashcat johnny cuda nvidia nvidia-settings \
-    feroxbuster nmap whois
+    feroxbuster nmap whois binwalk
     
     # Part: 6
     yay -S brave-bin librewolf-bin onlyoffice-bin timeshift devour pup --noconfirm
