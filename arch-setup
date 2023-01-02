@@ -111,7 +111,7 @@ else
     feroxbuster nmap whois binwalk
     
     # Part: 6
-    yay -S brave-bin librewolf-bin onlyoffice-bin timeshift devour pup --noconfirm
+    yay -S brave-bin librewolf-bin onlyoffice-bin appimagelauncher timeshift devour pup --noconfirm
     
     # Part: 7
     sudo snap install pycharm-professional --classic
