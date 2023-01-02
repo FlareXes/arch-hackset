@@ -107,7 +107,7 @@ else
     sudo pacman -Syyu --noconfirm
 
     # Part: 5
-    sudo pacman --noconfirm -S hashcat johnny cuda nvidia nvidia-settings \
+    sudo pacman --noconfirm -S hashid hashcat johnny cuda nvidia nvidia-settings \
     feroxbuster nmap whois binwalk
     
     # Part: 6
