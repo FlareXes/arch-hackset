@@ -49,7 +49,10 @@ then
     chmod +x /tmp/randx_unix && sudo mv /tmp/randx_unix /usr/local/bin/randx
 
     git clone https://github.com/FlareXes/cryptfile.git /tmp/cryptfile
-    cd  /tmp/cryptfile && chmod +x setup && ./setup
+    cd /tmp/cryptfile && chmod +x setup && ./setup
+
+    git clone https://github.com/FlareXes/offsync /tmp/offsync
+    cd /tmp/offsync && chmod +x ./setup.sh && ./setup.sh
 
     git clone https://github.com/FlareXes/watodo.git /tmp/watodo
     cd /tmp/watodo && chmod +x setup && ./setup
