@@ -39,14 +39,14 @@ then
     sudo chmod +x /usr/local/bin/ytfzf
     sudo sed -i "s/mpv/devour mpv/" /usr/local/bin/ytfzf
 
+    sudo wget https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi -O /usr/local/bin/passrofi
+    sudo chmod +x /usr/local/bin/passrofi
+
     wget https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach -O /tmp/check-breach
     chmod +x /tmp/check-breach && sudo mv /tmp/check-breach /usr/local/bin/
 
     wget https://github.com/FlareXes/randx/raw/master/bin/randx_unix -O /tmp/randx_unix
     chmod +x /tmp/randx_unix && sudo mv /tmp/randx_unix /usr/local/bin/randx
-
-    wget https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi -O /usr/local/bin/passrofi
-    sudo chmod +x /usr/local/bin/passrofi
 
     git clone https://github.com/FlareXes/cryptfile.git /tmp/cryptfile
     cd  /tmp/cryptfile && chmod +x setup && ./setup
