@@ -9,7 +9,7 @@ then
     sudo pacman --noconfirm -S archlinux-keyring
     sudo pacman-key --init
     sudo pacman --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv \
-    seahorse axel pass-otp youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
+    seahorse gnome-keyring axel pass-otp youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
     firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython \
     keepassxc foliate festival festival-english festival-us 
 
@@ -111,7 +111,7 @@ else
 
     # Part: 5
     sudo pacman --noconfirm -S hashid hashcat johnny cuda nvidia nvidia-settings \
-    feroxbuster nmap whois binwalk
+    feroxbuster nmap seclists whois binwalk
     
     # Part: 6
     yay -S brave-bin librewolf-bin onlyoffice-bin appimagelauncher timeshift devour pup --noconfirm
