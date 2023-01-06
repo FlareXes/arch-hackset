@@ -122,6 +122,7 @@ else
     sudo snap install code --classic
     sudo snap install spotify 
     sudo snap install authy
+    sudo systemctl enable --now snapd.apparmor
 
     # Part: 8
     rm -rf ~/.config/arch-hackset/
