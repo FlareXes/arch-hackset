@@ -4,10 +4,10 @@
 
 
 # Part: 1
-sudo pacman -Syyu --noconfirm
+sudo pacman -Syyu --noconfirm --disable-download-timeout
 sudo pacman --noconfirm -S archlinux-keyring
 sudo pacman-key --init
-sudo pacman --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv expect \
+sudo pacman --disable-download-timeout --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv expect \
 seahorse gnome-keyring axel pass-otp youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
 firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython code \
 keepassxc foliate festival festival-english festival-us xdotool macchanger flatpak
@@ -98,7 +98,7 @@ sudo ufw enable
 
 
 # Part: 4
-sudo pacman --noconfirm -S hashid hashcat johnny feroxbuster nmap seclists \
+sudo pacman --disable-download-timeout --noconfirm -S hashid hashcat johnny feroxbuster nmap seclists \
 whois binwalk burpsuite
 
 
