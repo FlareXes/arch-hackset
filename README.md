@@ -1,5 +1,7 @@
 # arch-hackset
-Personal Script To Setup Arch Based Distro
+Personal Script To Setup Arch Based Distributions.
+
+During First Run Of Script, System Will Reboot To Install `Snap` Properly. So, Once System Boots Up Run The `arch-setup` Script Again. This Time It Should Work Flawless.
 
 # Usage
 ```bash
