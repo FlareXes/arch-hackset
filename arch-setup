@@ -9,8 +9,8 @@ then
     sudo pacman --noconfirm -S archlinux-keyring
     sudo pacman-key --init
     sudo pacman --disable-download-timeout --noconfirm -S base-devel git wget curl go sed net-tools neovim lsd mpv expect \
-    seahorse axel pass-otp youtube-dl yt-dlp obs-studio jq fzf unzip docker ufw firefox \
-    firefox-developer-edition wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython code \
+    axel pass-otp youtube-dl yt-dlp obs-studio jq bat fzf unzip docker ufw firefox \
+    wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython code \
     keepassxc foliate xdotool macchanger 
 
     # Part: 2
@@ -63,9 +63,6 @@ then
 
     git clone https://github.com/FlareXes/watodo.git /tmp/watodo
     cd /tmp/watodo && chmod +x setup && ./setup
-
-    git clone https://github.com/FlareXes/watodo-sync.git /tmp/watodo-sync
-    cd /tmp/watodo-sync && chmod +x setup && ./setup
 
     git clone https://github.com/FlareXes/yt-like.git /tmp/yt-like
     cd /tmp/yt-like && chmod +x setup.sh && ./setup.sh
