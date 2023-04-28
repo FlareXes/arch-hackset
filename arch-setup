@@ -2,6 +2,8 @@
 
 # Version: v0.4
 
+set -e
+
 if [ ! -f ~/.config/arch-hackset/after_restart ];
 then
     # Part: 1
@@ -34,6 +36,9 @@ then
 
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman -O /usr/local/bin/myman
     sudo chmod +x /usr/local/bin/myman
+
+    sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/selftar -O /usr/local/bin/selftar
+    sudo chmod +x /usr/local/bin/selftar
 
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/ytplay -O /usr/local/bin/ytplay
     sudo chmod +x /usr/local/bin/ytplay
@@ -97,7 +102,7 @@ EOF
     #!/bin/sh
     exec gdb -q -ex init-gef "\$@"
 EOF
-    
+
     sudo chmod +x /usr/local/bin/gdb-pwndbg /usr/local/bin/gdb-peda /usr/local/bin/gdb-gef
 
     # Snap
@@ -125,7 +130,8 @@ EOF
 
     ## System Restart ##
     mkdir -p ~/.config/arch-hackset && touch ~/.config/arch-hackset/after_restart
-    sleep 5
+    echo "SYSTEM IS ABOUT TO RESTART"
+    sleep 10
     reboot
 
 else
