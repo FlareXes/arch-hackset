@@ -153,7 +153,6 @@ else
     # Part: 6
     sudo snap install pycharm-professional --classic
     sudo snap install clion --classic
-    sudo snap install authy
 
     # Part: 7
     rm -rf ~/.config/arch-hackset/
