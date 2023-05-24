@@ -155,10 +155,9 @@ else
     sudo snap install clion --classic
 
     # Part: 7
-    sudo sed -i "s/remote_autogenerate_max_duration=1200/remote_autogenerate_max_duration=3600/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
-    sudo sed -i "s/remote_thumbnail_count=60/remote_thumbnail_count=150/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
-    sudo sed -i "s/remote_min_delta=15/remote_min_delta=5/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
-    sudo sed -i "s/remote_max_delta=120/remote_max_delta=90/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
+    sudo sed -i "s/thumbnail_width=200/thumbnail_width=300/"        /etc/mpv/script-opts/mpv_thumbnail_script.conf
+    sudo sed -i "s/thumbnail_height=200/thumbnail_height=300/"      /etc/mpv/script-opts/mpv_thumbnail_script.conf
+    sudo sed -i "s/storyboard_upscale=no/storyboard_upscale=yes/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
 
     rm -rf ~/.config/arch-hackset/
 fi
