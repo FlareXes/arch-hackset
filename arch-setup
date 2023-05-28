@@ -28,6 +28,9 @@ then
     curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip
     unzip /tmp/awscliv2.zip -d /tmp/ && cd /tmp/aws/ && sudo ./install
 
+    mkdir -p ~/.config/mpv/mpv.conf
+    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.config/mpv/mpv.conf -O ~/.config/mpv/mpv.conf
+
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare -O /usr/local/bin/fshare
     sudo chmod +x /usr/local/bin/fshare
 
