@@ -1,67 +1,109 @@
 #!/bin/bash
 
-# Version: v0.4
+# Version: v0.5
 
 set -e
 
+# Check if a command is available
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Check if a package is installed
+package_installed() {
+  pacman -Q "$1" >/dev/null 2>&1
+}
+
+# Check if a directory exists
+directory_exists() {
+  [ -d "$1" ]
+}
+
 if [ ! -f ~/.config/arch-hackset/after_restart ];
 then
-    # Part: 1
-    sudo pacman -Syyu --noconfirm --disable-download-timeout
-    sudo pacman --noconfirm -S archlinux-keyring
-    sudo pacman-key --init
-    sudo pacman --disable-download-timeout --noconfirm -S base-devel git gdb wget curl go sed net-tools neovim lsd mpv expect \
-    pwndbg peda gef axel pass-otp youtube-dl yt-dlp obs-studio jq bat fzf unzip docker ufw firefox \
-    wireshark-qt jre-openjdk jdk-openjdk python python-pip bpython code \
-    keepassxc foliate xdotool macchanger
+  # Part: 1
+  sudo pacman -Syyu --noconfirm --disable-download-timeout
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "translate-shell")
 
-    # Part: 2
-    curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
-    curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/sxhkdrc >> ~/.config/bspwm/sxhkdrc
-    
-    PJ=$(jq '. + { "extensionsGallery": { "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items" } }' /usr/lib/code/product.json)
-    echo "$PJ" | sudo tee /usr/lib/code/product.json
+  for dependency in "${dependencies[@]}"; do
+      if ! command_exists "$dependency"; then
+          if ! package_installed "$dependency"; then
+              sudo pacman -S --disable-download-timeout --noconfirm "$dependency"
+          fi
+      fi
+  done
 
-    curl https://blackarch.org/strap.sh -o /tmp/strap.sh
-    chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
 
+  # Part: 2
+  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
+  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/sxhkdrc >> ~/.config/bspwm/sxhkdrc
+
+  mkdir -p ~/.config/mpv/ && touch ~/.config/mpv/mpv.conf
+  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/.config/mpv/mpv.conf >> ~/.config/mpv/mpv.conf
+
+
+  PJ=$(jq '. + { "extensionsGallery": { "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items" } }' /usr/lib/code/product.json)
+  echo "$PJ" | sudo tee /usr/lib/code/product.json
+
+  curl https://blackarch.org/strap.sh -o /tmp/strap.sh
+  chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
+
+  if ! command_exists "aws"; then
     curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o /tmp/awscliv2.zip
     unzip /tmp/awscliv2.zip -d /tmp/ && cd /tmp/aws/ && sudo ./install
+  fi
 
-    mkdir -p ~/.config/mpv/mpv.conf
-    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.config/mpv/mpv.conf -O ~/.config/mpv/mpv.conf
-
+  if ! command_exists "fshare"; then
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare -O /usr/local/bin/fshare
     sudo chmod +x /usr/local/bin/fshare
+  fi
 
+  if ! command_exists "emofzf"; then
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/emofzf -O /usr/local/bin/emofzf
     sudo chmod +x /usr/local/bin/emofzf
+  fi
 
+
+  if ! command_exists "myman"; then
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman -O /usr/local/bin/myman
     sudo chmod +x /usr/local/bin/myman
+  fi
 
+  if ! command_exists "selftar"; then
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/selftar -O /usr/local/bin/selftar
     sudo chmod +x /usr/local/bin/selftar
+  fi
 
+  if ! command_exists "ytplay"; then
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/ytplay -O /usr/local/bin/ytplay
     sudo chmod +x /usr/local/bin/ytplay
     sudo sed -i "s/mpv/devour mpv/" /usr/local/bin/ytplay
+  fi
 
+  if ! command_exists "ytfzf"; then
     sudo wget https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf -O /usr/local/bin/ytfzf
     sudo chmod +x /usr/local/bin/ytfzf
     sudo sed -i "s/mpv/devour mpv/" /usr/local/bin/ytfzf
+  fi
 
+  if ! command_exists "passrofi"; then
     sudo wget https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi -O /usr/local/bin/passrofi
     sudo chmod +x /usr/local/bin/passrofi
+  fi
 
-    wget https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach -O /tmp/check-breach
-    chmod +x /tmp/check-breach && sudo mv /tmp/check-breach /usr/local/bin/
 
-    wget https://github.com/FlareXes/randx/raw/master/bin/randx_unix -O /tmp/randx_unix
-    chmod +x /tmp/randx_unix && sudo mv /tmp/randx_unix /usr/local/bin/randx
+  if ! command_exists "check-breach"; then
+    sudo wget https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach -O /usr/local/bin/check-breach
+    sudo chmod +x /usr/local/bin/check-breach
+  fi
+
+  if ! command_exists "randx"; then
+    sudo wget https://github.com/FlareXes/randx/raw/master/bin/randx_unix -O /usr/local/bin/randx
+    sudo chmod +x /usr/local/bin/randx
+  fi
 
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
-    sudo systemctl enable macspoof@wlan0.service
+    sudo systemctl enable --now macspoof@wlan0.service
 
     git clone https://github.com/FlareXes/cryptfile.git /tmp/cryptfile
     cd /tmp/cryptfile && chmod +x setup && ./setup
@@ -89,8 +131,6 @@ then
 
     # Part: 3
     # GNU Debugger - GDB
-    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.gdbinit -O ~/.gdbinit
-
     sudo tee /usr/local/bin/gdb-pwndbg > /dev/null << EOF
     #!/bin/sh
     exec gdb -q -ex init-pwndbg "\$@"
@@ -107,13 +147,12 @@ EOF
 EOF
 
     sudo chmod +x /usr/local/bin/gdb-pwndbg /usr/local/bin/gdb-peda /usr/local/bin/gdb-gef
+    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.gdbinit -O ~/.gdbinit
 
     # Snap
     sudo systemctl enable --now snapd.socket
     sudo systemctl start snapd.service
     sudo ln -s /var/lib/snapd/snap /snap
-    sudo systemctl enable --now snapd.apparmor
-
 
     # Docker
     sudo systemctl start docker.service
@@ -121,7 +160,6 @@ EOF
     sudo systemctl restart docker
     sudo usermod -aG docker $USER
     sudo docker run hello-world
-
 
     # Ufw
     sudo systemctl enable ufw
@@ -141,28 +179,43 @@ else
 
     # Miscellaneous
     sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
-    sudo systemctl enable --now snapd.apparmor
 
     # Part: 4
-    sudo pacman --disable-download-timeout --noconfirm -S hashid hashcat johnny feroxbuster nmap seclists \
-    whois binwalk burpsuite
+    dependencies=("hashid" "hashcat" "johnny" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite")    
+    for dependency in "${dependencies[@]}"; do
+        if ! command_exists "$dependency"; then
+            if ! package_installed "$dependency"; then
+                sudo pacman -S --noconfirm "$dependency"
+            fi
+        fi
+    done
 
 
-    # Part: 5
-    yay -S brave-bin librewolf-bin onlyoffice-bin appimagelauncher portmaster-stub-bin  \
-    timeshift devour pup mpv-thumbnail-script --noconfirm
+
+  # Part: 5
+  yay_dependencies=("brave-bin" "librewolf-bin" "onlyoffice-bin" "appimagelauncher" "portmaster-stub-bin" "timeshift" "devour" "pup" "mpv-thumbnail-script")
+
+  for dependency in "${yay_dependencies[@]}"; do
+    if ! command_exists "$dependency"; then
+      if ! package_installed "$dependency"; then
+        yay -S --noconfirm "$dependency"
+      fi
+    fi
+  done
 
 
-    # Part: 6
-    sudo snap install pycharm-professional --classic
-    sudo snap install clion --classic
+  # Part: 6
+  if ! command_exists "pycharm-professional"; then
+      sudo snap install pycharm-professional --classic
+  fi
 
-    # Part: 7
-    sudo sed -i "s/thumbnail_width=200/thumbnail_width=300/"        /etc/mpv/script-opts/mpv_thumbnail_script.conf
-    sudo sed -i "s/thumbnail_height=200/thumbnail_height=300/"      /etc/mpv/script-opts/mpv_thumbnail_script.conf
-    sudo sed -i "s/storyboard_upscale=no/storyboard_upscale=yes/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
 
-    rm -rf ~/.config/arch-hackset/
+  # Part: 7
+  sudo sed -i "s/thumbnail_width=200/thumbnail_width=300/"        /etc/mpv/script-opts/mpv_thumbnail_script.conf
+  sudo sed -i "s/thumbnail_height=200/thumbnail_height=300/"      /etc/mpv/script-opts/mpv_thumbnail_script.conf
+  sudo sed -i "s/storyboard_upscale=no/storyboard_upscale=yes/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
+
+  rm -rf ~/.config/arch-hackset/
 fi
 
 exit
