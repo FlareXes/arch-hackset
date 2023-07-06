@@ -19,11 +19,7 @@ directory_exists() {
   [ -d "$1" ]
 }
 
-
-if [ ! -f ~/.config/arch-hackset/after_restart ];
-then
-  # Part: 1
-  sudo pacman -Syyu --noconfirm --disable-download-timeout
+install_basic_packages() {
   dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "translate-shell")
 
   for dependency in "${dependencies[@]}"; do
@@ -33,9 +29,10 @@ then
           fi
       fi
   done
+}
 
-
-  # Part: 2
+install_github_tools() {
+  # Scripts
   scripts=(
     "fshare=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare"
     "emofzf=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/emofzf"
@@ -48,16 +45,8 @@ then
     "randx=https://github.com/FlareXes/randx/raw/master/bin/randx_unix"
   )
 
-  for script in "${scripts[@]}"; do
-    name="${script%=*}"
-    url="${script#*=}"
-    if ! command_exists "$name"; then
-      sudo wget "$url" -O "/usr/local/bin/$name"
-      sudo chmod +x "/usr/local/bin/$name"
-    fi
-  done
-
-  scripts=(
+  # Tools
+  tools=(
     "cryptfile=https://github.com/FlareXes/cryptfile.git"
     "offsync=https://github.com/FlareXes/offsync.git"
     "watodo=https://github.com/FlareXes/watodo.git"
@@ -67,32 +56,53 @@ then
   for script in "${scripts[@]}"; do
     name="${script%=*}"
     url="${script#*=}"
+    if ! command_exists "$name"; then
+      sudo wget "$url" -O "/usr/local/bin/$name"
+      sudo chmod +x "/usr/local/bin/$name"
+    fi
+  done
+
+  for tool in "${tools[@]}"; do
+    name="${tool%=*}"
+    url="${tool#*=}"
     temp_dir=$(mktemp -d -t $name.XXXXXXXXXX)
     if ! command_exists "$name"; then
       git clone "$url" "$temp_dir"
       cd "$temp_dir" && chmod +x setup.sh && ./setup.sh
     fi
   done
+}
 
+install_hacking_tools() {
+  dependencies=("hashid" "hashcat" "johnny" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite")    
+  for dependency in "${dependencies[@]}"; do
+      if ! command_exists "$dependency"; then
+          if ! package_installed "$dependency"; then
+              sudo pacman -S --noconfirm "$dependency"
+          fi
+      fi
+  done
+}
 
-  # Part: 3
-  mkdir -p ~/.config/mpv/ && touch ~/.config/mpv/mpv.conf
-  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/.config/mpv/mpv.conf >> ~/.config/mpv/mpv.conf
-  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
-  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/sxhkdrc >> ~/.config/bspwm/sxhkdrc
+install_yay_packages() {
+  yay_dependencies=("brave-bin" "librewolf-bin" "onlyoffice-bin" "appimagelauncher" "portmaster-stub-bin" "timeshift" "devour" "pup" "mpv-thumbnail-script")
 
-  wget https://blackarch.org/strap.sh -O /tmp/strap.sh
-  chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
+  for dependency in "${yay_dependencies[@]}"; do
+    if ! command_exists "$dependency"; then
+      if ! package_installed "$dependency"; then
+        yay -S --noconfirm "$dependency"
+      fi
+    fi
+  done
+}
 
-  sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
-  sudo systemctl enable --now macspoof@wlan0.service
+install_snap_packages() {
+  if ! command_exists "pycharm-professional"; then
+      sudo snap install pycharm-professional --classic
+  fi
+}
 
-  git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
-  cd $HOME/dotfiles && mv ./.scripts $HOME/
-
-  git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
-  sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
-
+install_from_aur() {
   if ! command_exists "yay"; then
     git clone https://aur.archlinux.org/yay.git /tmp/yay
     cd /tmp/yay && makepkg -sirc --noconfirm
@@ -102,9 +112,36 @@ then
     git clone https://aur.archlinux.org/snapd.git /tmp/snapd
     cd /tmp/snapd && makepkg -sirc --noconfirm
   fi
+}
 
-  # Part: 4
-  # GNU Debugger - GDB
+setup_blackarch_repo() {
+  wget https://blackarch.org/strap.sh -O /tmp/strap.sh
+  chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
+}
+
+enable_systemd_services() {
+  # Snap
+  sudo systemctl enable --now snapd.socket
+  sudo ln -s /var/lib/snapd/snap /snap
+
+  # Docker
+  sudo systemctl enable --now docker.service
+  sudo systemctl start docker.service
+  sudo systemctl restart docker
+  sudo usermod -aG docker $USER
+  sudo docker run hello-world
+
+  # Ufw
+  sudo systemctl enable --now ufw
+  sudo systemctl start ufw
+  sudo ufw default allow outgoing
+  sudo ufw default deny incoming
+  sudo ufw enable
+}
+
+
+## TOOLS SPECIFICATIONS
+configure_gdb() {
   sudo tee /usr/local/bin/gdb-pwndbg > /dev/null << EOF
   #!/bin/sh
   exec gdb -q -ex init-pwndbg "\$@"
@@ -122,72 +159,72 @@ EOF
 
   sudo chmod +x /usr/local/bin/gdb-pwndbg /usr/local/bin/gdb-peda /usr/local/bin/gdb-gef
   wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.gdbinit -O ~/.gdbinit
+}
 
-  # Snap
-  sudo systemctl enable --now snapd.socket
-  sudo systemctl start snapd.service
-  sudo ln -s /var/lib/snapd/snap /snap
-
-  # Docker
-  sudo systemctl start docker.service
-  sudo systemctl enable docker.service
-  sudo systemctl restart docker
-  sudo usermod -aG docker $USER
-  sudo docker run hello-world
-
-  # Ufw
-  sudo systemctl enable ufw
-  sudo systemctl start ufw
-  sudo ufw default allow outgoing
-  sudo ufw default deny incoming
-  sudo ufw enable
-
-  ## System Restart ##
-  mkdir -p ~/.config/arch-hackset && touch ~/.config/arch-hackset/after_restart
-  echo "SYSTEM IS ABOUT TO RESTART"
-  sleep 10
-  reboot
-
-else
-
-  # Part: 4
-  dependencies=("hashid" "hashcat" "johnny" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite")    
-  for dependency in "${dependencies[@]}"; do
-      if ! command_exists "$dependency"; then
-          if ! package_installed "$dependency"; then
-              sudo pacman -S --noconfirm "$dependency"
-          fi
-      fi
-  done
-
-
-  # Part: 5
-  yay_dependencies=("brave-bin" "librewolf-bin" "onlyoffice-bin" "appimagelauncher" "portmaster-stub-bin" "timeshift" "devour" "pup" "mpv-thumbnail-script")
-
-  for dependency in "${yay_dependencies[@]}"; do
-    if ! command_exists "$dependency"; then
-      if ! package_installed "$dependency"; then
-        yay -S --noconfirm "$dependency"
-      fi
-    fi
-  done
-
-
-  # Part: 6
-  if ! command_exists "pycharm-professional"; then
-      sudo snap install pycharm-professional --classic
-  fi
-
-
-  # Miscellaneous
-  sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
-
+configure_vscode() {
   PJ=$(jq '. + { "extensionsGallery": { "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items" } }' /usr/lib/code/product.json)
   echo "$PJ" | sudo tee /usr/lib/code/product.json
+}
+
+
+configure_mpv() {
+  mkdir -p ~/.config/mpv/ && touch ~/.config/mpv/mpv.conf
+  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/.config/mpv/mpv.conf >> ~/.config/mpv/mpv.conf
 
   sudo sed -i "s/thumbnail_width=200/thumbnail_width=300/"        /etc/mpv/script-opts/mpv_thumbnail_script.conf
   sudo sed -i "s/thumbnail_height=200/thumbnail_height=300/"      /etc/mpv/script-opts/mpv_thumbnail_script.conf
   sudo sed -i "s/storyboard_upscale=no/storyboard_upscale=yes/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
+}
+
+update_configs() {
+  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
+  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/sxhkdrc >> ~/.config/bspwm/sxhkdrc
+
+  # Neovim
+  git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
+  sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
+}
+
+miscellaneous() {
+  sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
+  sudo systemctl enable --now macspoof@wlan0.service
+
+  git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
+  cd $HOME/dotfiles && mv ./.scripts $HOME/
+
+  sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
+}
+
+restart_system() {
+  mkdir -p ~/.config/arch-hackset && touch ~/.config/arch-hackset/after_restart
+  echo "SYSTEM IS ABOUT TO RESTART"
+  sleep 10
+  reboot
+}
+
+
+if [ ! -f ~/.config/arch-hackset/after_restart ];
+then
+  # Update System
+  sudo pacman -Syyu --noconfirm --disable-download-timeout
+
+  install_basic_packages
+  install_github_tools
+  install_from_aur
+  setup_blackarch_repo
+  restart_system
+
+else
+
+  enable_systemd_services
+  install_hacking_tools
+  install_yay_packages
+  install_snap_packages
+  configure_gdb
+  configure_mpv
+  configure_vscode
+  update_configs
+  miscellaneous
 
   rm -rf ~/.config/arch-hackset/
 fi
