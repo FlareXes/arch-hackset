@@ -14,14 +14,12 @@ package_installed() {
   pacman -Q "$1" >/dev/null 2>&1
 }
 
-# Check if a directory exists
-directory_exists() {
-  [ -d "$1" ]
-}
-
+# Install basic packages from the pacman package manager
 install_basic_packages() {
+  # List of dependencies to install
   dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "translate-shell")
 
+  # Install missing dependencies
   for dependency in "${dependencies[@]}"; do
       if ! command_exists "$dependency"; then
           if ! package_installed "$dependency"; then
@@ -31,6 +29,7 @@ install_basic_packages() {
   done
 }
 
+# Install tools from GitHub repositories
 install_github_tools() {
   # Scripts
   scripts=(
@@ -53,6 +52,7 @@ install_github_tools() {
     "yt-like=https://github.com/FlareXes/yt-like.git"
   )
 
+  # Install scripts from GitHub
   for script in "${scripts[@]}"; do
     name="${script%=*}"
     url="${script#*=}"
@@ -62,6 +62,7 @@ install_github_tools() {
     fi
   done
 
+  # Install tools from GitHub
   for tool in "${tools[@]}"; do
     name="${tool%=*}"
     url="${tool#*=}"
@@ -78,12 +79,26 @@ install_hacking_tools() {
   for dependency in "${dependencies[@]}"; do
       if ! command_exists "$dependency"; then
           if ! package_installed "$dependency"; then
-              sudo pacman -S --noconfirm "$dependency"
+              sudo pacman -S  --disable-download-timeout --noconfirm "$dependency"
           fi
       fi
   done
 }
 
+# Install yay and snap from AUR
+install_from_aur() {
+  if ! command_exists "yay"; then
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    cd /tmp/yay && makepkg -sirc --noconfirm
+  fi
+
+  if ! command_exists "snap"; then
+    git clone https://aur.archlinux.org/snapd.git /tmp/snapd
+    cd /tmp/snapd && makepkg -sirc --noconfirm
+  fi
+}
+
+# Install packages from AUR using yay
 install_yay_packages() {
   yay_dependencies=("brave-bin" "librewolf-bin" "onlyoffice-bin" "appimagelauncher" "portmaster-stub-bin" "timeshift" "devour" "pup" "mpv-thumbnail-script")
 
@@ -99,18 +114,6 @@ install_yay_packages() {
 install_snap_packages() {
   if ! command_exists "pycharm-professional"; then
       sudo snap install pycharm-professional --classic
-  fi
-}
-
-install_from_aur() {
-  if ! command_exists "yay"; then
-    git clone https://aur.archlinux.org/yay.git /tmp/yay
-    cd /tmp/yay && makepkg -sirc --noconfirm
-  fi
-
-  if ! command_exists "snap"; then
-    git clone https://aur.archlinux.org/snapd.git /tmp/snapd
-    cd /tmp/snapd && makepkg -sirc --noconfirm
   fi
 }
 
@@ -140,7 +143,9 @@ enable_systemd_services() {
 }
 
 
-## TOOLS SPECIFICATIONS
+## TOOLS SPECIFICATIONS ##
+
+# Configure GDB aliases and extensions
 configure_gdb() {
   sudo tee /usr/local/bin/gdb-pwndbg > /dev/null << EOF
   #!/bin/sh
@@ -161,12 +166,13 @@ EOF
   wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.gdbinit -O ~/.gdbinit
 }
 
+# Configure code-oss extension marketplace
 configure_vscode() {
   PJ=$(jq '. + { "extensionsGallery": { "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items" } }' /usr/lib/code/product.json)
   echo "$PJ" | sudo tee /usr/lib/code/product.json
 }
 
-
+# Configure mpv for subtital and preview
 configure_mpv() {
   mkdir -p ~/.config/mpv/ && touch ~/.config/mpv/mpv.conf
   curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/.config/mpv/mpv.conf >> ~/.config/mpv/mpv.conf
@@ -176,6 +182,7 @@ configure_mpv() {
   sudo sed -i "s/storyboard_upscale=no/storyboard_upscale=yes/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
 }
 
+# Update configuration files
 update_configs() {
   curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
   curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/sxhkdrc >> ~/.config/bspwm/sxhkdrc
@@ -185,6 +192,7 @@ update_configs() {
   sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
 }
 
+# Miscellaneous configurations and installations
 miscellaneous() {
   sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
   sudo systemctl enable --now macspoof@wlan0.service
@@ -195,6 +203,7 @@ miscellaneous() {
   sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
 }
 
+# Restart the system
 restart_system() {
   mkdir -p ~/.config/arch-hackset && touch ~/.config/arch-hackset/after_restart
   echo "SYSTEM IS ABOUT TO RESTART"
@@ -202,7 +211,7 @@ restart_system() {
   reboot
 }
 
-
+# Check if the script is running for the first time after system restart
 if [ ! -f ~/.config/arch-hackset/after_restart ];
 then
   # Update System
@@ -213,9 +222,7 @@ then
   install_from_aur
   setup_blackarch_repo
   restart_system
-
 else
-
   enable_systemd_services
   install_hacking_tools
   install_yay_packages
