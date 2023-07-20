@@ -42,6 +42,7 @@ install_github_tools() {
     "passrofi=https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi"
     "check-breach=https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach"
     "randx=https://github.com/FlareXes/randx/raw/master/bin/randx_unix"
+    "tikdown=https://raw.githubusercontent.com/FlareXes/tikdown/main/tikdown"
   )
 
   # Tools
@@ -75,7 +76,7 @@ install_github_tools() {
 }
 
 install_hacking_tools() {
-  dependencies=("hashid" "hashcat" "johnny" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite")    
+  dependencies=("hashid" "hashcat" "johnny" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
   for dependency in "${dependencies[@]}"; do
       if ! command_exists "$dependency"; then
           if ! package_installed "$dependency"; then
