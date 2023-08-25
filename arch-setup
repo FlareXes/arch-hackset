@@ -17,7 +17,7 @@ package_installed() {
 # Install basic packages from the pacman package manager
 install_basic_packages() {
   # List of dependencies to install
-  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "translate-shell")
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "rofi" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "translate-shell")
 
   # Install missing dependencies
   for dependency in "${dependencies[@]}"; do
@@ -76,7 +76,7 @@ install_github_tools() {
 }
 
 install_hacking_tools() {
-  dependencies=("hashid" "hashcat" "johnny" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
+  dependencies=("hashid" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
   for dependency in "${dependencies[@]}"; do
       if ! command_exists "$dependency"; then
           if ! package_installed "$dependency"; then
