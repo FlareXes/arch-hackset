@@ -76,7 +76,7 @@ install_github_tools() {
 }
 
 install_hacking_tools() {
-  dependencies=("hashid" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
+  dependencies=("hashid" "sqlmap" "wpscan" "wfuzz" "fuff" "gobuster" "sublist3r" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
   for dependency in "${dependencies[@]}"; do
       if ! command_exists "$dependency"; then
           if ! package_installed "$dependency"; then
