@@ -17,7 +17,7 @@ package_installed() {
 # Install basic packages from the pacman package manager
 install_basic_packages() {
   # List of dependencies to install
-  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "rofi" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "translate-shell")
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "rofi" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "firejail" "translate-shell")
 
   # Install missing dependencies
   for dependency in "${dependencies[@]}"; do
@@ -197,6 +197,9 @@ update_configs() {
 miscellaneous() {
   sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
   sudo systemctl enable --now macspoof@wlan0.service
+
+  sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/change-machine-id.service -O /etc/systemd/system/change-machine-id.service
+  sudo systemctl enable change-machine-id.service
 
   git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
   cd $HOME/dotfiles && mv ./.scripts $HOME/
