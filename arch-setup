@@ -9,15 +9,17 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
+
 # Check if a package is installed
 package_installed() {
   pacman -Q "$1" >/dev/null 2>&1
 }
 
+
 # Install basic packages from the pacman package manager
 install_basic_packages() {
   # List of dependencies to install
-  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "rofi" "pass-otp" "youtube-dl" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "firejail" "translate-shell")
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "pwndbg" "peda" "gef" "axel" "rofi" "pass-otp" "yt-dlp" "obs-studio" "jq" "bat" "fzf" "unzip" "docker" "aws-cli-v2" "ufw" "firefox" "wireshark-qt" "jre-openjdk" "jdk-openjdk" "python" "python-pip" "bpython" "code" "keepassxc" "xdotool" "macchanger" "firejail" "translate-shell")
 
   # Install missing dependencies
   for dependency in "${dependencies[@]}"; do
@@ -29,6 +31,7 @@ install_basic_packages() {
   done
 }
 
+
 # Install tools from GitHub repositories
 install_github_tools() {
   # Scripts
@@ -36,7 +39,6 @@ install_github_tools() {
     "fshare=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare"
     "emofzf=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/emofzf"
     "myman=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman"
-    "selftar=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/selftar"
     "ytplay=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/ytplay"
     "ytfzf=https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf"
     "passrofi=https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi"
@@ -75,16 +77,6 @@ install_github_tools() {
   done
 }
 
-install_hacking_tools() {
-  dependencies=("hashid" "sqlmap" "wpscan" "wfuzz" "fuff" "gobuster" "sublist3r" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
-  for dependency in "${dependencies[@]}"; do
-      if ! command_exists "$dependency"; then
-          if ! package_installed "$dependency"; then
-              sudo pacman -S  --disable-download-timeout --noconfirm "$dependency"
-          fi
-      fi
-  done
-}
 
 # Install yay and snap from AUR
 install_from_aur() {
@@ -99,29 +91,21 @@ install_from_aur() {
   fi
 }
 
-# Install packages from AUR using yay
-install_yay_packages() {
-  yay_dependencies=("brave-bin" "librewolf-bin" "onlyoffice-bin" "appimagelauncher" "portmaster-stub-bin" "timeshift" "devour" "pup" "mpv-thumbnail-script")
-
-  for dependency in "${yay_dependencies[@]}"; do
-    if ! command_exists "$dependency"; then
-      if ! package_installed "$dependency"; then
-        yay -S --noconfirm "$dependency"
-      fi
-    fi
-  done
-}
-
-install_snap_packages() {
-  if ! command_exists "pycharm-professional"; then
-      sudo snap install pycharm-professional --classic
-  fi
-}
 
 setup_blackarch_repo() {
   wget https://blackarch.org/strap.sh -O /tmp/strap.sh
   chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
 }
+
+
+# Restart the system
+restart_system() {
+  mkdir -p ~/.config/arch-hackset && touch ~/.config/arch-hackset/after_restart
+  echo "SYSTEM IS ABOUT TO RESTART"
+  sleep 10
+  reboot
+}
+
 
 enable_systemd_services() {
   # Snap
@@ -141,6 +125,39 @@ enable_systemd_services() {
   sudo ufw default allow outgoing
   sudo ufw default deny incoming
   sudo ufw enable
+}
+
+
+install_hacking_tools() {
+  dependencies=("hashid" "sqlmap" "wpscan" "wfuzz" "gobuster" "sublist3r" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
+  for dependency in "${dependencies[@]}"; do
+      if ! command_exists "$dependency"; then
+          if ! package_installed "$dependency"; then
+              sudo pacman -S  --disable-download-timeout --noconfirm "$dependency"
+          fi
+      fi
+  done
+}
+
+
+# Install packages from AUR using yay
+install_yay_packages() {
+  yay_dependencies=("brave-bin" "librewolf-bin" "onlyoffice-bin" "appimagelauncher" "portmaster-stub-bin" "timeshift" "devour" "pup" "mpv-thumbnail-script")
+
+  for dependency in "${yay_dependencies[@]}"; do
+    if ! command_exists "$dependency"; then
+      if ! package_installed "$dependency"; then
+        yay -S --noconfirm "$dependency"
+      fi
+    fi
+  done
+}
+
+
+install_snap_packages() {
+  if ! command_exists "pycharm-professional"; then
+      sudo snap install pycharm-professional --classic
+  fi
 }
 
 
@@ -167,11 +184,6 @@ EOF
   wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.gdbinit -O ~/.gdbinit
 }
 
-# Configure code-oss extension marketplace
-configure_vscode() {
-  PJ=$(jq '. + { "extensionsGallery": { "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items" } }' /usr/lib/code/product.json)
-  echo "$PJ" | sudo tee /usr/lib/code/product.json
-}
 
 # Configure mpv for subtital and preview
 configure_mpv() {
@@ -183,6 +195,14 @@ configure_mpv() {
   sudo sed -i "s/storyboard_upscale=no/storyboard_upscale=yes/"   /etc/mpv/script-opts/mpv_thumbnail_script.conf
 }
 
+
+# Configure code-oss extension marketplace
+configure_vscode() {
+  PJ=$(jq '. + { "extensionsGallery": { "serviceUrl": "https://marketplace.visualstudio.com/_apis/public/gallery", "cacheUrl": "https://vscode.blob.core.windows.net/gallery/index", "itemUrl": "https://marketplace.visualstudio.com/items" } }' /usr/lib/code/product.json)
+  echo "$PJ" | sudo tee /usr/lib/code/product.json
+}
+
+
 # Update configuration files
 update_configs() {
   curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
@@ -193,10 +213,11 @@ update_configs() {
   sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
 }
 
+
 # Miscellaneous configurations and installations
 miscellaneous() {
   sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
-  sudo systemctl enable --now macspoof@wlan0.service
+  sudo systemctl enable macspoof@wlan0.service
 
   sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/change-machine-id.service -O /etc/systemd/system/change-machine-id.service
   sudo systemctl enable change-machine-id.service
@@ -207,13 +228,6 @@ miscellaneous() {
   sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
 }
 
-# Restart the system
-restart_system() {
-  mkdir -p ~/.config/arch-hackset && touch ~/.config/arch-hackset/after_restart
-  echo "SYSTEM IS ABOUT TO RESTART"
-  sleep 10
-  reboot
-}
 
 # Check if the script is running for the first time after system restart
 if [ ! -f ~/.config/arch-hackset/after_restart ];
@@ -238,6 +252,7 @@ else
   miscellaneous
 
   rm -rf ~/.config/arch-hackset/
+  echo -e "\nSYSTEM IS ABOUT TO RESTART"
 fi
 
 exit
