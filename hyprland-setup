@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+# Version: v0.1
+
+set -e
+
+# Check if a command is available
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+
+# Check if a package is installed
+package_installed() {
+  pacman -Q "$1" >/dev/null 2>&1
+}
+
+
+# Install basic packages from the pacman package manager
+install_basic_packages() {
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli-v2" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "xdotool" "macchanger" "firejail" "translate-shell" "brightnessctl" "imagemagick" "grim" "slurp" "swappy" "wl-clipboard")
+
+  # Install missing dependencies
+  for dependency in "${dependencies[@]}"; do
+      if ! command_exists "$dependency"; then
+          if ! package_installed "$dependency"; then
+              sudo pacman -S --disable-download-timeout --noconfirm "$dependency"
+          fi
+      fi
+  done
+}
+
+
+# Install packages from AUR using yay
+install_yay_packages() {
+  yay_dependencies=("brave-bin" "appimagelauncher" "portmaster-stub-bin" "pup" "mpv-thumbnail-script" "hyprpicker-git" )
+
+  for dependency in "${yay_dependencies[@]}"; do
+    if ! command_exists "$dependency"; then
+      if ! package_installed "$dependency"; then
+        yay -S --noconfirm "$dependency"
+      fi
+    fi
+  done
+}
+
+
+install_snap_packages() {
+  if ! command_exists "pycharm-professional"; then
+      sudo snap install pycharm-professional --classic
+  fi
+
+  if ! command_exists "code-insiders"; then
+      sudo snap install code-insiders --classic
+  fi
+}
+
+
+# Install yay and snap from AUR
+install_from_aur() {
+  if ! command_exists "yay"; then
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    cd /tmp/yay && makepkg -sirc --noconfirm
+  fi
+
+  if ! command_exists "snap"; then
+    git clone https://aur.archlinux.org/snapd.git /tmp/snapd
+    cd /tmp/snapd && makepkg -sirc --noconfirm
+  fi
+}
+
+setup_blackarch_repo() {
+  wget https://blackarch.org/strap.sh -O /tmp/strap.sh
+  chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
+}
+
+
+enable_systemd_services() {
+  # Snap
+  sudo systemctl enable --now snapd.socket
+  sudo ln -s /var/lib/snapd/snap /snap
+
+  # Docker
+  sudo systemctl enable --now docker.service
+  sudo systemctl start docker.service
+  sudo systemctl restart docker
+  sudo usermod -aG docker $USER
+  sudo docker run hello-world
+
+  # Ufw
+  sudo systemctl enable --now ufw
+  sudo systemctl start ufw
+  sudo ufw default allow outgoing
+  sudo ufw default deny incoming
+  sudo ufw enable
+}
+
