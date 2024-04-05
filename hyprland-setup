@@ -18,7 +18,7 @@ package_installed() {
 
 # Install basic packages from the pacman package manager
 install_basic_packages() {
-  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli-v2" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "xdotool" "macchanger" "firejail" "translate-shell" "brightnessctl" "imagemagick" "grim" "slurp" "swappy" "wl-clipboard")
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli-v2" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
 
   # Install missing dependencies
   for dependency in "${dependencies[@]}"; do
