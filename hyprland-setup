@@ -16,6 +16,33 @@ package_installed() {
 }
 
 
+setup_blackarch_repo() {
+  wget https://blackarch.org/strap.sh -O /tmp/strap.sh
+  chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
+}
+
+
+enable_systemd_services() {
+  # Snap
+  sudo systemctl enable --now snapd.socket
+  sudo ln -s /var/lib/snapd/snap /snap
+
+  # Docker
+  sudo systemctl enable --now docker.service
+  sudo systemctl start docker.service
+  sudo systemctl restart docker
+  sudo usermod -aG docker $USER
+  sudo docker run hello-world
+
+  # Ufw
+  sudo systemctl enable --now ufw
+  sudo systemctl start ufw
+  sudo ufw default allow outgoing
+  sudo ufw default deny incoming
+  sudo ufw enable
+}
+
+
 # Install basic packages from the pacman package manager
 install_basic_packages() {
   dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
@@ -76,29 +103,59 @@ install_from_aur() {
   fi
 }
 
-setup_blackarch_repo() {
-  wget https://blackarch.org/strap.sh -O /tmp/strap.sh
-  chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
+
+# Install tools from GitHub repositories
+install_github_tools() {
+  # Scripts
+  scripts=(
+    "fshare=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare"
+    "myman=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman"
+    "ytfzf=https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf"
+    "passrofi=https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi"
+    "check-breach=https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach"
+    "randx=https://github.com/FlareXes/randx/raw/master/bin/randx_unix"
+  )
+
+  # Tools
+  tools=(
+    "cryptfile=https://github.com/FlareXes/cryptfile.git"
+    "offsync=https://github.com/FlareXes/offsync.git"
+    "watodo=https://github.com/FlareXes/watodo.git"
+  )
+
+  # Install scripts from GitHub
+  for script in "${scripts[@]}"; do
+    name="${script%=*}"
+    url="${script#*=}"
+    if ! command_exists "$name"; then
+      sudo wget "$url" -O "/usr/local/bin/$name"
+      sudo chmod +x "/usr/local/bin/$name"
+    fi
+  done
+
+  # Install tools from GitHub
+  for tool in "${tools[@]}"; do
+    name="${tool%=*}"
+    url="${tool#*=}"
+    temp_dir=$(mktemp -d -t $name.XXXXXXXXXX)
+    if ! command_exists "$name"; then
+      git clone "$url" "$temp_dir"
+      cd "$temp_dir" && chmod +x setup.sh && ./setup.sh
+    fi
+  done
 }
 
 
-enable_systemd_services() {
-  # Snap
-  sudo systemctl enable --now snapd.socket
-  sudo ln -s /var/lib/snapd/snap /snap
-
-  # Docker
-  sudo systemctl enable --now docker.service
-  sudo systemctl start docker.service
-  sudo systemctl restart docker
-  sudo usermod -aG docker $USER
-  sudo docker run hello-world
-
-  # Ufw
-  sudo systemctl enable --now ufw
-  sudo systemctl start ufw
-  sudo ufw default allow outgoing
-  sudo ufw default deny incoming
-  sudo ufw enable
+install_hacking_tools() {
+  dependencies=("hashid" "sqlmap" "wpscan" "wfuzz" "gobuster" "sublist3r" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
+  for dependency in "${dependencies[@]}"; do
+      if ! command_exists "$dependency"; then
+          if ! package_installed "$dependency"; then
+              sudo pacman -S  --disable-download-timeout --noconfirm "$dependency"
+          fi
+      fi
+  done
 }
+
+
 
