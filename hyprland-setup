@@ -18,7 +18,7 @@ package_installed() {
 
 # Install basic packages from the pacman package manager
 install_basic_packages() {
-  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli-v2" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
 
   # Install missing dependencies
   for dependency in "${dependencies[@]}"; do
@@ -33,7 +33,7 @@ install_basic_packages() {
 
 # Install packages from AUR using yay
 install_yay_packages() {
-  yay_dependencies=("brave-bin" "appimagelauncher" "portmaster-stub-bin" "pup" "mpv-thumbnail-script" "hyprpicker-git" )
+  yay_dependencies=("librewolf-bin" "brave-bin" "appimagelauncher" "portmaster-stub-bin" "pup" "mpv-thumbnail-script" "hyprpicker-git" )
 
   for dependency in "${yay_dependencies[@]}"; do
     if ! command_exists "$dependency"; then
@@ -46,15 +46,22 @@ install_yay_packages() {
 
 
 install_snap_packages() {
-  if ! command_exists "pycharm-professional"; then
-      sudo snap install pycharm-professional --classic
-  fi
-
   if ! command_exists "code-insiders"; then
       sudo snap install code-insiders --classic
   fi
 }
 
+
+# Install flatpak packages from flathub
+install_flatpak_packages() {
+  flatpak_dependencies=("md.obsidian.Obsidian" "io.freetubeapp.FreeTube" "com.github.tchx84.Flatseal" "org.gnome.World.PikaBackup")
+
+  for dependency in "${yay_dependencies[@]}"; do
+    if ! command_exists "$dependency"; then
+      flatpak install flathub "$dependency"
+    fi
+  done
+}
 
 # Install yay and snap from AUR
 install_from_aur() {
