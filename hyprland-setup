@@ -45,7 +45,7 @@ enable_systemd_services() {
 
 # Install basic packages from the pacman package manager
 install_basic_packages() {
-  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
+  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
 
   # Install missing dependencies
   for dependency in "${dependencies[@]}"; do
@@ -89,6 +89,7 @@ install_flatpak_packages() {
     fi
   done
 }
+
 
 # Install yay and snap from AUR
 install_from_aur() {
@@ -158,4 +159,57 @@ install_hacking_tools() {
 }
 
 
+# Update configuration files
+update_configs() {
+  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
 
+  # Neovim
+  git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
+  sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
+}
+
+
+# Miscellaneous configurations and installations
+miscellaneous() {
+  sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
+  sudo systemctl enable macspoof@wlan0.service
+
+  sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/change-machine-id.service -O /etc/systemd/system/change-machine-id.service
+  sudo systemctl enable change-machine-id.service
+
+  git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
+  cd $HOME/dotfiles && mv ./.scripts $HOME/
+
+  sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
+}
+
+
+# # # # # # # # #  # # # # # #  # # # # # #  # # # # # #  # # # # # # 
+#                                                                   #
+# ██╗   ██╗ ██████╗ ██╗██████╗     ███╗   ███╗ █████╗ ██╗███╗   ██╗ #
+# ██║   ██║██╔═══██╗██║██╔══██╗    ████╗ ████║██╔══██╗██║████╗  ██║ #
+# ██║   ██║██║   ██║██║██║  ██║    ██╔████╔██║███████║██║██╔██╗ ██║ #
+# ╚██╗ ██╔╝██║   ██║██║██║  ██║    ██║╚██╔╝██║██╔══██║██║██║╚██╗██║ #
+#  ╚████╔╝ ╚██████╔╝██║██████╔╝    ██║ ╚═╝ ██║██║  ██║██║██║ ╚████║ #
+#   ╚═══╝   ╚═════╝ ╚═╝╚═════╝     ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ #
+#                                                                   #
+# # # # # # # # #  # # # # # #  # # # # # #  # # # # # #  # # # # # # 
+
+
+sudo pacman -Syyu --noconfirm --disable-download-timeout
+
+install_basic_packages
+install_flatpak_packages
+install_github_tools
+install_from_aur
+
+setup_blackarch_repo
+install_hacking_tools
+install_yay_packages
+install_snap_packages
+
+enable_systemd_services
+update_configs
+miscellaneous
+
+echo -e "\nSYSTEM IS ABOUT TO RESTART"
