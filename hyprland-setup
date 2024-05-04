@@ -6,185 +6,185 @@ set -e
 
 # Check if a command is available
 command_exists() {
-  command -v "$1" >/dev/null 2>&1
+    command -v "$1" >/dev/null 2>&1
 }
 
 
 # Check if a package is installed
 package_installed() {
-  pacman -Q "$1" >/dev/null 2>&1
+    pacman -Q "$1" >/dev/null 2>&1
 }
 
 
 setup_blackarch_repo() {
-  wget https://blackarch.org/strap.sh -O /tmp/strap.sh
-  chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
+    wget https://blackarch.org/strap.sh -O /tmp/strap.sh
+    chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
 }
 
 
 enable_systemd_services() {
-  # Snap
-  sudo systemctl enable --now snapd.socket
-  sudo ln -s /var/lib/snapd/snap /snap
-
-  # Docker
-  sudo systemctl enable --now docker.service
-  sudo systemctl start docker.service
-  sudo systemctl restart docker
-  sudo usermod -aG docker $USER
-  sudo docker run hello-world
-
-  # Ufw
-  sudo systemctl enable --now ufw
-  sudo systemctl start ufw
-  sudo ufw default allow outgoing
-  sudo ufw default deny incoming
-  sudo ufw enable
+    # Snap
+    sudo systemctl enable --now snapd.socket
+    sudo ln -s /var/lib/snapd/snap /snap
+    
+    # Docker
+    sudo systemctl enable --now docker.service
+    sudo systemctl start docker.service
+    sudo systemctl restart docker
+    sudo usermod -aG docker $USER
+    sudo docker run hello-world
+    
+    # Ufw
+    sudo systemctl enable --now ufw
+    sudo systemctl start ufw
+    sudo ufw default allow outgoing
+    sudo ufw default deny incoming
+    sudo ufw enable
 }
 
 
 # Install basic packages from the pacman package manager
 install_basic_packages() {
-  dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
-
-  # Install missing dependencies
-  for dependency in "${dependencies[@]}"; do
-      if ! command_exists "$dependency"; then
-          if ! package_installed "$dependency"; then
-              sudo pacman -S --disable-download-timeout --noconfirm "$dependency"
-          fi
-      fi
-  done
+    dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
+    
+    # Install missing dependencies
+    for dependency in "${dependencies[@]}"; do
+        if ! command_exists "$dependency"; then
+            if ! package_installed "$dependency"; then
+                sudo pacman -S --disable-download-timeout --noconfirm "$dependency"
+            fi
+        fi
+    done
 }
 
 
 # Install packages from AUR using yay
 install_yay_packages() {
-  yay_dependencies=("librewolf-bin" "brave-bin" "appimagelauncher" "portmaster-stub-bin" "pup" "mpv-thumbnail-script" "hyprpicker-git" )
-
-  for dependency in "${yay_dependencies[@]}"; do
-    if ! command_exists "$dependency"; then
-      if ! package_installed "$dependency"; then
-        yay -S --noconfirm "$dependency"
-      fi
-    fi
-  done
+    yay_dependencies=("librewolf-bin" "brave-bin" "appimagelauncher" "portmaster-stub-bin" "pup" "mpv-thumbnail-script" "hyprpicker-git" )
+    
+    for dependency in "${yay_dependencies[@]}"; do
+        if ! command_exists "$dependency"; then
+            if ! package_installed "$dependency"; then
+                yay -S --noconfirm "$dependency"
+            fi
+        fi
+    done
 }
 
 
 install_snap_packages() {
-  if ! command_exists "code-insiders"; then
-      sudo snap install code-insiders --classic
-  fi
+    if ! command_exists "code-insiders"; then
+        sudo snap install code-insiders --classic
+    fi
 }
 
 
 # Install flatpak packages from flathub
 install_flatpak_packages() {
-  flatpak_dependencies=("md.obsidian.Obsidian" "io.freetubeapp.FreeTube" "com.github.tchx84.Flatseal" "org.gnome.World.PikaBackup")
-
-  for dependency in "${yay_dependencies[@]}"; do
-    if ! command_exists "$dependency"; then
-      flatpak install flathub "$dependency"
-    fi
-  done
+    flatpak_dependencies=("md.obsidian.Obsidian" "io.freetubeapp.FreeTube" "com.github.tchx84.Flatseal" "org.gnome.World.PikaBackup")
+    
+    for dependency in "${yay_dependencies[@]}"; do
+        if ! command_exists "$dependency"; then
+            flatpak install flathub "$dependency"
+        fi
+    done
 }
 
 
 # Install yay and snap from AUR
 install_from_aur() {
-  if ! command_exists "yay"; then
-    git clone https://aur.archlinux.org/yay.git /tmp/yay
-    cd /tmp/yay && makepkg -sirc --noconfirm
-  fi
-
-  if ! command_exists "snap"; then
-    git clone https://aur.archlinux.org/snapd.git /tmp/snapd
-    cd /tmp/snapd && makepkg -sirc --noconfirm
-  fi
+    if ! command_exists "yay"; then
+        git clone https://aur.archlinux.org/yay.git /tmp/yay
+        cd /tmp/yay && makepkg -sirc --noconfirm
+    fi
+    
+    if ! command_exists "snap"; then
+        git clone https://aur.archlinux.org/snapd.git /tmp/snapd
+        cd /tmp/snapd && makepkg -sirc --noconfirm
+    fi
 }
 
 
 # Install tools from GitHub repositories
 install_github_tools() {
-  # Scripts
-  scripts=(
-    "fshare=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare"
-    "myman=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman"
-    "ytfzf=https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf"
-    "passrofi=https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi"
-    "check-breach=https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach"
-    "randx=https://github.com/FlareXes/randx/raw/master/bin/randx_unix"
-  )
-
-  # Tools
-  tools=(
-    "cryptfile=https://github.com/FlareXes/cryptfile.git"
-    "offsync=https://github.com/FlareXes/offsync.git"
-    "watodo=https://github.com/FlareXes/watodo.git"
-  )
-
-  # Install scripts from GitHub
-  for script in "${scripts[@]}"; do
-    name="${script%=*}"
-    url="${script#*=}"
-    if ! command_exists "$name"; then
-      sudo wget "$url" -O "/usr/local/bin/$name"
-      sudo chmod +x "/usr/local/bin/$name"
-    fi
-  done
-
-  # Install tools from GitHub
-  for tool in "${tools[@]}"; do
-    name="${tool%=*}"
-    url="${tool#*=}"
-    temp_dir=$(mktemp -d -t $name.XXXXXXXXXX)
-    if ! command_exists "$name"; then
-      git clone "$url" "$temp_dir"
-      cd "$temp_dir" && chmod +x setup.sh && ./setup.sh
-    fi
-  done
+    # Scripts
+    scripts=(
+        "fshare=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare"
+        "myman=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman"
+        "ytfzf=https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf"
+        "passrofi=https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi"
+        "check-breach=https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach"
+        "randx=https://github.com/FlareXes/randx/raw/master/bin/randx_unix"
+    )
+    
+    # Tools
+    tools=(
+        "cryptfile=https://github.com/FlareXes/cryptfile.git"
+        "offsync=https://github.com/FlareXes/offsync.git"
+        "watodo=https://github.com/FlareXes/watodo.git"
+    )
+    
+    # Install scripts from GitHub
+    for script in "${scripts[@]}"; do
+        name="${script%=*}"
+        url="${script#*=}"
+        if ! command_exists "$name"; then
+            sudo wget "$url" -O "/usr/local/bin/$name"
+            sudo chmod +x "/usr/local/bin/$name"
+        fi
+    done
+    
+    # Install tools from GitHub
+    for tool in "${tools[@]}"; do
+        name="${tool%=*}"
+        url="${tool#*=}"
+        temp_dir=$(mktemp -d -t $name.XXXXXXXXXX)
+        if ! command_exists "$name"; then
+            git clone "$url" "$temp_dir"
+            cd "$temp_dir" && chmod +x setup.sh && ./setup.sh
+        fi
+    done
 }
 
 
 install_hacking_tools() {
-  dependencies=("hashid" "sqlmap" "wpscan" "wfuzz" "gobuster" "sublist3r" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")    
-  for dependency in "${dependencies[@]}"; do
-      if ! command_exists "$dependency"; then
-          if ! package_installed "$dependency"; then
-              sudo pacman -S  --disable-download-timeout --noconfirm "$dependency"
-          fi
-      fi
-  done
+    dependencies=("hashid" "sqlmap" "wpscan" "wfuzz" "gobuster" "sublist3r" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")
+    for dependency in "${dependencies[@]}"; do
+        if ! command_exists "$dependency"; then
+            if ! package_installed "$dependency"; then
+                sudo pacman -S  --disable-download-timeout --noconfirm "$dependency"
+            fi
+        fi
+    done
 }
 
 
 # Update configuration files
 update_configs() {
-  curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
-
-  # Neovim
-  git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
-  sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
+    curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
+    
+    # Neovim
+    git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
+    sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
 }
 
 
 # Miscellaneous configurations and installations
 miscellaneous() {
-  sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
-  sudo systemctl enable macspoof@wlan0.service
-
-  sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/change-machine-id.service -O /etc/systemd/system/change-machine-id.service
-  sudo systemctl enable change-machine-id.service
-
-  git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
-  cd $HOME/dotfiles && mv ./.scripts $HOME/
-
-  sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
+    sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
+    sudo systemctl enable macspoof@wlan0.service
+    
+    sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/change-machine-id.service -O /etc/systemd/system/change-machine-id.service
+    sudo systemctl enable change-machine-id.service
+    
+    git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
+    cd $HOME/dotfiles && mv ./.scripts $HOME/
+    
+    sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
 }
 
 
-# # # # # # # # #  # # # # # #  # # # # # #  # # # # # #  # # # # # # 
+# # # # # # # # #  # # # # # #  # # # # # #  # # # # # #  # # # # # #
 #                                                                   #
 # ██╗   ██╗ ██████╗ ██╗██████╗     ███╗   ███╗ █████╗ ██╗███╗   ██╗ #
 # ██║   ██║██╔═══██╗██║██╔══██╗    ████╗ ████║██╔══██╗██║████╗  ██║ #
@@ -193,7 +193,7 @@ miscellaneous() {
 #  ╚████╔╝ ╚██████╔╝██║██████╔╝    ██║ ╚═╝ ██║██║  ██║██║██║ ╚████║ #
 #   ╚═══╝   ╚═════╝ ╚═╝╚═════╝     ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ #
 #                                                                   #
-# # # # # # # # #  # # # # # #  # # # # # #  # # # # # #  # # # # # # 
+# # # # # # # # #  # # # # # #  # # # # # #  # # # # # #  # # # # # #
 
 
 sudo pacman -Syyu --noconfirm --disable-download-timeout
