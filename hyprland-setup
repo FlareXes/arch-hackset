@@ -21,6 +21,20 @@ setup_blackarch_repo() {
     chmod +x /tmp/strap.sh && cd /tmp/ && sudo ./strap.sh
 }
 
+setup_oh_my_zsh() {
+    # Change shell to zsh
+    sudo chsh -s /usr/bin/zsh $USER
+    
+    # Install oh-my-zsh
+    sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+    
+    # Install custom theme
+    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.oh-my-zsh/custom/themes/archcraft.zsh-theme -O $USER/.oh-my-zsh/custom/themes/archcraft.zsh-theme
+
+    # Overwrite the .zshrc
+    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.zshrc -O $USER/.zshrc && source $USER/.zshrc
+}
+
 
 enable_systemd_services() {
     # Snap
@@ -43,9 +57,8 @@ enable_systemd_services() {
 }
 
 
-# Install basic packages from the pacman package manager
 install_basic_packages() {
-    dependencies=("base-devel" "git" "gdb" "wget" "curl" "go" "sed" "net-tools" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
+    dependencies=("base-devel" "git" "gdb" "wget" "zsh" "curl" "go" "sed" "net-tools" "ttf-jetbrains-mono-nerd" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
     
     # Install missing dependencies
     for dependency in "${dependencies[@]}"; do
@@ -58,7 +71,6 @@ install_basic_packages() {
 }
 
 
-# Install packages from AUR using yay
 install_yay_packages() {
     yay_dependencies=("librewolf-bin" "brave-bin" "appimagelauncher" "portmaster-stub-bin" "pup" "mpv-thumbnail-script" "hyprpicker-git" )
     
@@ -79,7 +91,6 @@ install_snap_packages() {
 }
 
 
-# Install flatpak packages from flathub
 install_flatpak_packages() {
     flatpak_dependencies=("md.obsidian.Obsidian" "io.freetubeapp.FreeTube" "com.github.tchx84.Flatseal" "org.gnome.World.PikaBackup")
     
@@ -91,7 +102,6 @@ install_flatpak_packages() {
 }
 
 
-# Install yay and snap from AUR
 install_from_aur() {
     if ! command_exists "yay"; then
         git clone https://aur.archlinux.org/yay.git /tmp/yay
@@ -105,7 +115,6 @@ install_from_aur() {
 }
 
 
-# Install tools from GitHub repositories
 install_github_tools() {
     # Scripts
     scripts=(
@@ -159,7 +168,6 @@ install_hacking_tools() {
 }
 
 
-# Update configuration files
 update_configs() {
     curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
     
@@ -169,7 +177,6 @@ update_configs() {
 }
 
 
-# Miscellaneous configurations and installations
 miscellaneous() {
     sudo wget https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/systemd-unit/macspoof@.service -O /etc/systemd/system/macspoof@.service
     sudo systemctl enable macspoof@wlan0.service
