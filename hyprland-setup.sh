@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Version: v0.1
+# Version: v0.2
 
 set -e
 
@@ -29,10 +29,10 @@ setup_oh_my_zsh() {
     sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
     
     # Install custom theme
-    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.oh-my-zsh/custom/themes/archcraft.zsh-theme -O $USER/.oh-my-zsh/custom/themes/archcraft.zsh-theme
-
+    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.oh-my-zsh/custom/themes/archcraft.zsh-theme -O $HOME/.oh-my-zsh/custom/themes/archcraft.zsh-theme
+    
     # Overwrite the .zshrc
-    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.zshrc -O $USER/.zshrc && source $USER/.zshrc
+    wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.zshrc -O $HOME/.zshrc && source $HOME/.zshrc
 }
 
 
@@ -58,7 +58,7 @@ enable_systemd_services() {
 
 
 install_basic_packages() {
-    dependencies=("base-devel" "git" "gdb" "wget" "zsh" "curl" "go" "sed" "net-tools" "ttf-jetbrains-mono-nerd" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "wl-clipboard")
+    dependencies=("base-devel" "git" "gdb" "wget" "zsh" "curl" "go" "sed" "plocate" "net-tools" "ttf-jetbrains-mono-nerd" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "rofi-wayland" "wl-clipboard")
     
     # Install missing dependencies
     for dependency in "${dependencies[@]}"; do
@@ -118,21 +118,18 @@ install_from_aur() {
 install_github_tools() {
     # Scripts
     scripts=(
-        "fshare=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/fshare"
+        "fshare=https://raw.githubusercontent.com/FlareXes/fshare/main/fshare"
         "myman=https://raw.githubusercontent.com/FlareXes/Micro-Utils/main/bin/myman"
-        "ytfzf=https://raw.githubusercontent.com/pystardust/ytfzf/5cd15046127597ac6230c1f021dc9a5cdfff79d0/ytfzf"
         "passrofi=https://raw.githubusercontent.com/FlareXes/passrofi/main/passrofi"
         "check-breach=https://raw.githubusercontent.com/FlareXes/check-breach/main/check-breach"
-        "randx=https://github.com/FlareXes/randx/raw/master/bin/randx_unix"
     )
-    
+
     # Tools
     tools=(
-        "cryptfile=https://github.com/FlareXes/cryptfile.git"
         "offsync=https://github.com/FlareXes/offsync.git"
         "watodo=https://github.com/FlareXes/watodo.git"
     )
-    
+
     # Install scripts from GitHub
     for script in "${scripts[@]}"; do
         name="${script%=*}"
@@ -142,7 +139,7 @@ install_github_tools() {
             sudo chmod +x "/usr/local/bin/$name"
         fi
     done
-    
+
     # Install tools from GitHub
     for tool in "${tools[@]}"; do
         name="${tool%=*}"
@@ -157,7 +154,7 @@ install_github_tools() {
 
 
 install_hacking_tools() {
-    dependencies=("hashid" "sqlmap" "wpscan" "wfuzz" "gobuster" "sublist3r" "hashcat" "johnny" "haiti" "feroxbuster" "nmap" "seclists" "whois" "binwalk" "burpsuite" "hydra")
+    dependencies=("hashcat" "johnny" "haiti" "feroxbuster" "nmap" "whois")
     for dependency in "${dependencies[@]}"; do
         if ! command_exists "$dependency"; then
             if ! package_installed "$dependency"; then
@@ -168,9 +165,7 @@ install_hacking_tools() {
 }
 
 
-update_configs() {
-    curl https://raw.githubusercontent.com/FlareXes/dotfiles/main/zshrc >> ~/.zshrc
-    
+update_configs() {    
     # Neovim
     git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
     sed -i "s/transparency = false/transparency = true/" ~/.config/nvim/lua/core/default_config.lua
@@ -185,7 +180,6 @@ miscellaneous() {
     sudo systemctl enable change-machine-id.service
     
     git clone https://github.com/FlareXes/dotfiles.git $HOME/dotfiles
-    cd $HOME/dotfiles && mv ./.scripts $HOME/
     
     sudo chmod +x /usr/sbin/dumpcap /usr/bin/dumpcap
 }
@@ -210,6 +204,7 @@ install_flatpak_packages
 install_github_tools
 install_from_aur
 
+setup_oh_my_zsh
 setup_blackarch_repo
 install_hacking_tools
 install_yay_packages
@@ -219,4 +214,4 @@ enable_systemd_services
 update_configs
 miscellaneous
 
-echo -e "\nSYSTEM IS ABOUT TO RESTART"
+echo -e "\nSCRIPT IS COMPLETED, REBOOT YOUR SYSTEM"
