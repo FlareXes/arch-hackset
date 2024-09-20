@@ -33,6 +33,9 @@ setup_oh_my_zsh() {
     
     # Overwrite the .zshrc
     wget https://raw.githubusercontent.com/FlareXes/dotfiles/main/.zshrc -O $HOME/.zshrc && source $HOME/.zshrc
+
+    # Install Plugins
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 }
 
 
@@ -58,7 +61,7 @@ enable_systemd_services() {
 
 
 install_basic_packages() {
-    dependencies=("base-devel" "git" "gdb" "wget" "zsh" "curl" "go" "sed" "plocate" "net-tools" "ttf-jetbrains-mono-nerd" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "rofi-wayland" "wl-clipboard")
+    dependencies=("base-devel" "git" "gdb" "wget" "zsh" "curl" "go" "sed" "plocate" "net-tools" "ttf-jetbrains-mono-nerd" "flatpak" "reflector" "fastfetch" "neovim" "lsd" "mpv" "baobab" "expect" "axel" "pass-otp" "yt-dlp" "jq" "bc" "bat" "fzf" "unzip" "p7zip" "docker" "aws-cli" "ufw" "wireshark-qt" "timeshift" "python-pip" "bpython" "wtype" "macchanger" "firejail" "translate-shell" "obs-studio" "brightnessctl" "imagemagick" "swaylock" "grim" "slurp" "swappy" "rofi-wayland" "wl-clipboard")
     
     # Install missing dependencies
     for dependency in "${dependencies[@]}"; do
